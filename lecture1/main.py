@@ -11,10 +11,24 @@ agent = TwoArmedBandit(0.1)
 
 env.reset(options={'delay': 1})
 
-for iteration in range(num_iterations):
-    action = agent.get_action("random")    
-    _, reward, _, _, _ = env.step(action)
-    agent.update(action, reward) 
-    agent.render()
+modeArray = ['random', 'epsilon-greedy']
+totalRewardArray = {}
 
+for mode in modeArray:
+    print(f'Mode: ${mode}')
+    for _ in range(num_iterations):
+        action = agent.get_action(mode, .15)
+        _, reward, _, _, _ = env.step(action)
+        agent.update(action, reward)
+        agent.render()
+    print('\n')
+    agent.print_total_reward()
+    agent.get_total_actions()
+    print('----------------------------------------------------')
+    print('\n')
+    totalRewardArray[mode] = agent.get_total_reward()
+    agent.reset()
+
+for mode in modeArray:
+    print(f'Mode: {mode} ----- Reward: {totalRewardArray[mode]}')
 env.close()
