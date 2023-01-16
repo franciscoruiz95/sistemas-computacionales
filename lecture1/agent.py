@@ -14,7 +14,6 @@ class TwoArmedBandit():
         self.reward = 0
         self.iteration = 0
         self.total_reward = 0
-        self.total_reward = 0
         self.action_0 = 0
         self.action_1 = 0
         self.values = np.zeros(self.arms)
