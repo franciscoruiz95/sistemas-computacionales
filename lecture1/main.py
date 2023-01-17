@@ -14,7 +14,7 @@ agent = TwoArmedBandit(0.1)
 env.reset(options={'delay': 1})
 
 modeArray = ['random', 'epsilon-greedy']
-epsilonArray = [0.5, 0.25, 0.15, 0.1]
+epsilonArray = [0.5, 0.25, 0.15, 0.1, 0.01]
 totalRewardForMode = {}
 totalRewardForEpsilon = {}
 experimentsDic = {}
@@ -22,9 +22,9 @@ experimentsDic = {}
 for experiment in range(num_experiment):
     for epsilon in epsilonArray: 
         for mode in modeArray:
-            print(f'Mode: ${mode}')
-            for _ in range(num_iterations):
-                action = agent.get_action(mode, epsilon)
+            print(f'Mode: {mode}')
+            for iteration in range(num_iterations):
+                action = agent.get_action(mode, epsilon, num_iterations)
                 _, reward, _, _, _ = env.step(action)
                 agent.update(action, reward)
                 agent.render()
@@ -57,6 +57,9 @@ for experiment in range(num_experiment):
     print('***********************************\n')
 
 for epsilon in epsilonArray:
+    print(f'Reward average for epsilon = {epsilon}')
     for mode in modeArray:
-        print(f'Average for epsilon = {epsilon} in mode-{mode} : \t{totalRewardForModeDic[epsilon][mode]/num_experiment}')
+        tb_or_wsp = 2*'\t' if mode == 'random' else '\t'
+        print(f'in {mode}-mode :{tb_or_wsp}{totalRewardForModeDic[epsilon][mode]/num_experiment}')
+    print('----------------------------------------------------')
 env.close()
