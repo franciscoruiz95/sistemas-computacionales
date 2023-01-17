@@ -4,9 +4,6 @@ class TwoArmedBandit():
     def __init__(self, alpha=1):
         self.arms           = 2
         self.alpha          = alpha
-        self.total_reward   = 0
-        self.action_0       = 0
-        self.action_1       = 0
         self.reset()
 
     def reset(self):
@@ -14,8 +11,7 @@ class TwoArmedBandit():
         self.reward = 0
         self.iteration = 0
         self.total_reward = 0
-        self.action_0 = 0
-        self.action_1 = 0
+        self.total_actions = np.zeros(self.arms)
         self.values = np.zeros(self.arms)
         #self.values = np.random.rand(self.arms)
 
@@ -33,18 +29,14 @@ class TwoArmedBandit():
             return np.argmax(self.values)
         elif mode == 'epsilon-greedy':
             pr =  np.random.random()  # [0.0, 1.0)
-            return np.random.choice(self.arms) if pr < epsilon else np.argmax(self.values)
-            # if pr < (1 - epsilon):
-            #     return np.argmax(self.values)  # Usually
-            # return np.random.choice(self.arms)  # epsilon % of the time
+            action = np.random.choice(self.arms) if pr < epsilon else np.argmax(self.values)
+
+            self.total_actions[action] += 1
+            return  action 
                 
     def render(self):
         print("Iteration: {}, Action: {}, Reward: {}, Values: {}".format(
             self.iteration, self.action, self.reward, self.values))
-        if (self.action == 0):
-            self.action_0 +=1
-        else:
-            self.action_1 +=1
     
     def print_total_reward(self):
         print(f"Total reward: {self.total_reward}")
@@ -52,5 +44,8 @@ class TwoArmedBandit():
     def get_total_reward(self):
         return self.total_reward
 
+    def print_total_actions(self):
+        print(f"Total action 0: {self.total_actions[0]} ----- Total action 1: {self.total_actions[1]}")
+    
     def get_total_actions(self):
-        print(f"Total action 0: {self.action_0} ----- Total action 1: {self.action_1}")
+        return self.total_actions
