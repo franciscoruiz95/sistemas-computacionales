@@ -27,6 +27,7 @@ class TwoArmedBandit():
             return np.random.choice(self.arms)
         elif mode == 'greedy':
             return np.argmax(self.values)
+            # Epsilon-greedy method selection
         elif mode == 'epsilon-greedy':
             pr =  np.random.random()  # [0.0, 1.0)
             action = np.random.choice(self.arms) if pr < epsilon else np.argmax(self.values)

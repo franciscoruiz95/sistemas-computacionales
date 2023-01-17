@@ -1,3 +1,10 @@
+# Authors: Francisco Peña, javierrupe19@gmail.com
+#          José Briceño, bricenoj9@gmail.com
+#
+# Date: 17/01/20200
+# 
+# Multi-arms bandit methods comparison
+
 import sys
 import gym_environments
 import gym
@@ -6,7 +13,8 @@ from agent import TwoArmedBandit
 num_iterations = 100 if len(sys.argv) < 2 else int(sys.argv[1])
 version = "v0" if len(sys.argv) < 3 else sys.argv[2]
 
-num_experiment = 10
+# Number of experiments to run
+num_experiment = 100
 alpha = 0.1
 
 env = gym.make(f"TwoArmedBandit-{version}")
@@ -71,6 +79,8 @@ for epsilon in epsilonArray:
     for mode in modeArray:
         tb_or_wsp = 2*'\t' if mode == 'random' or mode == 'greedy' else '\t'
         print(f'in {mode}-mode :{tb_or_wsp}{totalRewardForModeDic[epsilon][mode]/num_experiment}')
+    print('-----------------------------------')
+    print('Average actions selection for epsilon-greedy-mode')
     print(f"Total action 0 :\t\t{totalActionsForEpsilonDic[epsilon]['epsilon-greedy'][0]/num_experiment}")
     print(f"Total action 1 :\t\t{totalActionsForEpsilonDic[epsilon]['epsilon-greedy'][1]/num_experiment}")
     print('----------------------------------------------------')
