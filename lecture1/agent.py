@@ -16,8 +16,8 @@ class TwoArmedBandit():
         self.total_reward = 0
         self.action_0 = 0
         self.action_1 = 0
-        # self.values = np.zeros(self.arms)
-        self.values = np.random.rand(self.arms)
+        self.values = np.zeros(self.arms)
+        #self.values = np.random.rand(self.arms)
 
     def update(self, action, reward):
         self.action = action
@@ -26,17 +26,17 @@ class TwoArmedBandit():
         self.values[action] = self.values[action] + self.alpha * (reward - self.values[action])
         self.total_reward += reward
 
-    def get_action(self, mode, epsilon=0.1, num_iterations=1):
+    def get_action(self, mode, epsilon=0.1):
         if mode == 'random':
             return np.random.choice(self.arms)
         elif mode == 'greedy':
             return np.argmax(self.values)
         elif mode == 'epsilon-greedy':
-            #return np.random.choice(self.arms) if np.random.random() < epsilon else np.argmax(self.values)
-            pr =  np.random.rand()  # [0.0, 1.0)
-            if pr < (1 - epsilon):
-                return np.argmax(self.values)  # Usually
-            return np.random.choice(self.arms)  # 5% of the time
+            pr =  np.random.random()  # [0.0, 1.0)
+            return np.random.choice(self.arms) if pr < epsilon else np.argmax(self.values)
+            # if pr < (1 - epsilon):
+            #     return np.argmax(self.values)  # Usually
+            # return np.random.choice(self.arms)  # epsilon % of the time
                 
     def render(self):
         print("Iteration: {}, Action: {}, Reward: {}, Values: {}".format(

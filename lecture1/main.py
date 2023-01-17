@@ -6,15 +6,16 @@ from agent import TwoArmedBandit
 num_iterations = 100 if len(sys.argv) < 2 else int(sys.argv[1])
 version = "v0" if len(sys.argv) < 3 else sys.argv[2]
 
-num_experiment = 100
+num_experiment = 1
+alpha = 0.1
 
 env = gym.make(f"TwoArmedBandit-{version}")
-agent = TwoArmedBandit(0.1) 
+agent = TwoArmedBandit(alpha) 
 
 env.reset(options={'delay': 1})
 
-modeArray = ['random', 'epsilon-greedy']
-epsilonArray = [0.5, 0.25, 0.15, 0.1, 0.01]
+modeArray = ['random', 'greedy', 'epsilon-greedy']
+epsilonArray = [0.25, 0.15, 0.1, 0.01]
 totalRewardForMode = {}
 totalRewardForEpsilon = {}
 experimentsDic = {}
@@ -24,7 +25,7 @@ for experiment in range(num_experiment):
         for mode in modeArray:
             print(f'Mode: {mode}')
             for iteration in range(num_iterations):
-                action = agent.get_action(mode, epsilon, num_iterations)
+                action = agent.get_action(mode, epsilon)
                 _, reward, _, _, _ = env.step(action)
                 agent.update(action, reward)
                 agent.render()
@@ -56,10 +57,13 @@ for experiment in range(num_experiment):
         print('----------------------------------------------------')
     print('***********************************\n')
 
+print(f'Results for experimets = {num_experiment} with iterations = {num_iterations} and alpha = {alpha}')
+print('----------------------------------------------------')
 for epsilon in epsilonArray:
     print(f'Reward average for epsilon = {epsilon}')
     for mode in modeArray:
-        tb_or_wsp = 2*'\t' if mode == 'random' else '\t'
+        tb_or_wsp = 2*'\t' if mode == 'random' or mode == 'greedy' else '\t'
         print(f'in {mode}-mode :{tb_or_wsp}{totalRewardForModeDic[epsilon][mode]/num_experiment}')
     print('----------------------------------------------------')
+
 env.close()
