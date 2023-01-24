@@ -5,6 +5,9 @@ Lecture 1
 Author: Alejandro Mujica - alejandro.j.mujic4@gmail.com
 Author: Jesús Pérez - perezj89@gmail.com
 
+Author: José Briceño - bricenoj9@gmail.com
+Author: Francisco Peña - javierrupe19@gmail.com
+
 This file contains the the Two-Armed Bandit Environment.
 """
 import time
@@ -45,6 +48,8 @@ class TwoArmedBanditEnv(gym.Env):
         )
         self.action = None
         self.reward = None
+        self.iteration = 0
+        self.total_reward = 0
         self.observation_space = gym.spaces.Discrete(1)
         self.action_space = gym.spaces.Discrete(len(self.arms))
 
@@ -66,6 +71,8 @@ class TwoArmedBanditEnv(gym.Env):
     def step(self, action):
         self.action = action
         self.reward = self.arms[action].pull()
+        self.total_reward += self.reward
+        self.iteration += 1
         self.render()
         return self._get_observations(), self.reward, False, False, self._get_info()
 
@@ -75,8 +82,20 @@ class TwoArmedBanditEnv(gym.Env):
         # Render the first machine
         self.window.blit(settings.TEXTURES['machine'], (50, 100))
 
-        # Render the second machine
+        # Render the second machine 
         self.window.blit(settings.TEXTURES['machine'], (100 + settings.MACHINE_WIDTH, 100))
+
+        # Render the total reward letter
+        text_obj = settings.FONTS['font'].render("TOTAL", True, (128, 0, 0))
+        text_rect = text_obj.get_rect()
+        text_rect.center = (50 + settings.MACHINE_WIDTH, 30)
+        self.window.blit(text_obj, text_rect)
+
+        # Render the total reward 
+        text_obj = settings.FONTS['font'].render(f"{self.total_reward}", True, (255, 20, 147))
+        text_rect = text_obj.get_rect()
+        text_rect.center = (50 + settings.MACHINE_WIDTH, 90)
+        self.window.blit(text_obj, text_rect)
 
         # Render the arrow under the selected machine
         x = 50 + settings.MACHINE_WIDTH / 2
@@ -85,6 +104,10 @@ class TwoArmedBanditEnv(gym.Env):
             x += settings.MACHINE_WIDTH + 50
 
         y = settings.WINDOW_HEIGHT - 50 - settings.ARROW_HEIGHT / 2
+
+        if self.iteration % 2 != 0:
+            y -= 20
+
         self.window.blit(settings.TEXTURES['arrow'], (x - settings.ARROW_WIDTH / 2 - 80, y))
 
         # Render the reward
@@ -96,6 +119,7 @@ class TwoArmedBanditEnv(gym.Env):
         text_rect = text_obj.get_rect()
         text_rect.center = (x, 50)
         self.window.blit(text_obj, text_rect)
+        
 
         pygame.event.pump()
         pygame.display.update()

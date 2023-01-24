@@ -5,6 +5,8 @@ Lecture 1
 Author: Alejandro Mujica - alejandro.j.mujic4@gmail.com
 Author: Jesús Pérez - perezj89@gmail.com
 
+Author: José Briceño - bricenoj9@gmail.com
+Author: Francisco Peña - javierrupe19@gmail.com
 This file contains the main script to run the Two-Armed Bandit Environment.
 """
 import sys
@@ -15,7 +17,7 @@ import environment
 from agent import TwoArmedBanditAgent
 
 def main(num_iterations):
-    env = gym.make("TwoArmedBanditEnv-v1")
+    env = gym.make("TwoArmedBanditEnv-v2")
     agent = TwoArmedBanditAgent(0.1, env.action_space.n)
 
     env.reset(seed=30)
@@ -25,6 +27,7 @@ def main(num_iterations):
         _, reward, _, _, _ = env.step(action)
         agent.update(action, reward)
         agent.render()
+    print(f"Total reeard: {agent.get_total_reward()}")
 
     env.close()
 

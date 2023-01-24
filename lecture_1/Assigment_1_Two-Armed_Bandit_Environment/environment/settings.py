@@ -14,8 +14,8 @@ import pygame
 BASE_DIR = pathlib.Path(__file__).parent
 
 TEXTURES = {
-    'machine': pygame.image.load(BASE_DIR / "assets"/ "graphics" / "slot-machine.png"),
-    'arrow': pygame.image.load(BASE_DIR / "assets"/ "graphics" / "up_arrow.png"),
+    'machine'   : pygame.image.load(BASE_DIR / "assets"/ "graphics" / "slot-machine.png"),
+    'arrow'     : pygame.image.load(BASE_DIR / "assets"/ "graphics" / "up_arrow.png")
 }
 
 pygame.font.init()
