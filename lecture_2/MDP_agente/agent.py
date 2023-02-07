@@ -7,6 +7,7 @@ class MDPAgent():
         self.actions_n = actions_n
         self.P = P
         self.gamma = gamma
+        self.resul = True
         self.reset()
 
     def reset(self):
@@ -26,7 +27,7 @@ class MDPAgent():
             self.policy_iteration(iterations)
 
     def value_teration(self, iterations):
-        for _ in range(iterations):
+        for t in range(iterations):
             for s in range(self.states_n):
                 values = [sum([prob * (r + self.gamma * self.values[s_next])
                                 for prob, s_next, r, _ in self.P[s][a]])
@@ -37,19 +38,21 @@ class MDPAgent():
     def policy_iteration(self, iterations):
         # Policy evaluation
         def policy_evaluation():
-            for _ in range(iterations):
+            for i in range(iterations):
                 for s in range(self.states_n):
                     values = [sum([prob * (r + self.gamma * self.values[s_next])
                                 for prob, s_next, r, _ in self.P[s][self.policy[s]]])]
                     self.values[s] = max(values)
+                policy_improvement()
+                print(self.optimal_policy_found, i)
+                if self.optimal_policy_found:
+                    break
 
-        # Compute value for each state under current policy
-        policy_evaluation()
-
-        for _ in range(iterations):
+        def policy_improvement():
             # Policy improvement
             # With updated state values, improve policy if needed
-            optimal_policy_found = True # Initial assumption: policy is stable
+            # optimal_policy_found = True # Initial assumption: policy is stable
+            self.optimal_policy_found = True
 
             for s in range(self.states_n):
                 old_action = self.policy[s]
@@ -59,7 +62,16 @@ class MDPAgent():
                 self.policy[s] = np.argmax(np.array(values))
 
                 if old_action != self.policy[s]:
-                    optimal_policy_found = False
+                    self.optimal_policy_found = False
+                
             
-            if optimal_policy_found: break
-            else: policy_evaluation()
+                # if optimal_policy_found:
+                #     break
+                # else: policy_evaluation()
+
+
+
+        # Compute value for each state under current policy
+        policy_evaluation()
+
+        
