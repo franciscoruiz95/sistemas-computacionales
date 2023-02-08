@@ -9,7 +9,7 @@ if "SDL_AUDIODRIVER" in os.environ:
 # RobotBattery-v0, FrozenLake-v1, FrozenLake-v2
 env = gym.make('FrozenLake-v1', render_mode=None, is_slippery=True)
 
-gamma_array = [round(value*0.1, 2) for value in range(11)]
+gamma_array = [round(value*0.1, 2) for value in range(1, 11)]
 
 iterations = 10000
 
@@ -19,7 +19,7 @@ for gamma in gamma_array:
     agent = MDPAgent(env.observation_space.n, env.action_space.n, env.P, gamma, iterations)
     mode = agent.solve("value-iteration")
     print("----------------------------------------------------------------------------")
-    print(f"Solving with MODE = {mode} | GAMMA = {gamma} | EXPERIMENTS = {experiments_number}")
+    print(f"Solving with MODE = {mode}({iterations}) | GAMMA = {gamma} | EXPERIMENTS = {experiments_number}")
     agent.render()
     total_reward = [0]
     for _ in range(experiments_number):

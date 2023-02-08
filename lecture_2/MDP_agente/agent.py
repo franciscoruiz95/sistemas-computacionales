@@ -20,9 +20,9 @@ class MDPAgent():
 
     def render(self):
         print("----------------------------------------------------------------------------")
-        print(f"Values: \n{self.values}")
+        print(f"Final values: \n{self.values}")
         print("----------------------------------------------------------------------------")
-        print(f"Policy: {self.policy}")
+        print(f"Optimal policy: {self.policy}")
         print("----------------------------------------------------------------------------")
 
     def solve(self, mode='value-iteration'):
