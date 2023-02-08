@@ -7,7 +7,6 @@ class MDPAgent():
         self.actions_n = actions_n
         self.P = P
         self.gamma = gamma
-        self.resul = True
         self.optimal_policy_found = False
         self.iterations = iterations
         self.reset()

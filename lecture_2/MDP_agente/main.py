@@ -1,9 +1,6 @@
 import os
-
 import gym
-import gym_environments
 from agent import MDPAgent
-import time
 
 # Allowing environment to have sounds
 if "SDL_AUDIODRIVER" in os.environ:
@@ -22,17 +19,14 @@ for gamma in gamma_array:
     agent = MDPAgent(env.observation_space.n, env.action_space.n, env.P, gamma, iterations)
     mode = agent.solve("value-iteration")
     print("----------------------------------------------------------------------------")
-    print(f"Solving with mode = {mode} | gamma = {gamma} | experiments = {experiments_number}")
+    print(f"Solving with MODE = {mode} | GAMMA = {gamma} | EXPERIMENTS = {experiments_number}")
     agent.render()
-    # agent.render() 
     total_reward = [0]
     for _ in range(experiments_number):
 
         reward_per_run = 0
         observation, info = env.reset()
         terminated, truncated = False, False
-
-        # env.render()
 
         while not (terminated or truncated):
             action = agent.get_action(observation)
@@ -41,6 +35,9 @@ for gamma in gamma_array:
         env.close()
         total_reward.append(reward_per_run)
 
-    print(f"{sum(total_reward)} \n")
+    t = sum(total_reward)
+    print(f"Total reward after {experiments_number} experiments is: {t}")
+    print(f"Success rate: {round((t / experiments_number) * 100, 2)}%")
+    print("---------------------------------------------------------------------------- \n")
 
 
