@@ -10,28 +10,37 @@ if "SDL_AUDIODRIVER" in os.environ:
     del os.environ["SDL_AUDIODRIVER"]
 
 # RobotBattery-v0, FrozenLake-v1, FrozenLake-v2
-env = gym.make('FrozenLake-v2', render_mode="human", is_slippery=True)
+env = gym.make('FrozenLake-v1', render_mode=None, is_slippery=True)
 
-agent = MDPAgent(env.observation_space.n, env.action_space.n, env.P)
+gamma_array = [round(value*0.1, 2) for value in range(11)]
 
-gamma_array = [round(value*0.1, 2) for value in range(1, 11)]
+iterations = 10000
+
+experiments_number = 2000
 
 for gamma in gamma_array:
-    agent.set_gamma(gamma)
-    agent.solve(10000, mode='value-iteration')
+    agent = MDPAgent(env.observation_space.n, env.action_space.n, env.P, gamma, iterations)
+    mode = agent.solve("value-iteration")
+    print("----------------------------------------------------------------------------")
+    print(f"Solving with mode = {mode} | gamma = {gamma} | experiments = {experiments_number}")
     agent.render()
-    agent.reset()
+    # agent.render() 
+    total_reward = [0]
+    for _ in range(experiments_number):
+
+        reward_per_run = 0
+        observation, info = env.reset()
+        terminated, truncated = False, False
+
+        # env.render()
+
+        while not (terminated or truncated):
+            action = agent.get_action(observation)
+            observation, reward, terminated, truncated, _ = env.step(action)
+            reward_per_run += reward
+        env.close()
+        total_reward.append(reward_per_run)
+
+    print(f"{sum(total_reward)} \n")
 
 
-# observation, info = env.reset()
-# terminated, truncated = False, False
-
-# env.render()
-# time.sleep(2)
-
-# while not (terminated or truncated):
-#     action = agent.get_action(observation)
-#     observation, _, terminated, truncated, _ = env.step(action)
-
-# time.sleep(2)
-# env.close()
