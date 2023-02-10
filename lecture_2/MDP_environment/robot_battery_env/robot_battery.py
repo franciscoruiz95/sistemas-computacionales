@@ -45,48 +45,39 @@ class RobotBattery(gym.Env):
         return 0, {}
 
     def step(self, action):
-        self.current_action = action
-        self.current_energy -= 2 * 0.7
-        truncated = False
 
-        if self.current_energy <= 0:
-            truncated = True
+        truncated = False
 
         if np.random.random() < 1 - self.current_energy / self.initial_energy:
             random_action = np.random.random_integers(0, 3)
             print(random_action, self.current_energy, self.current_state)
-            self.current_state = self.P[self.current_state][random_action][0][1]
-            self.current_reward = self.P[self.current_state][random_action][0][2]
-            terminated = self.P[self.current_state][self.current_action][0][3]
-
-            self.world.update(
-                self.current_state,
-                self.current_action,
-                self.current_reward,
-                terminated
-            )
-
-            self.render()
-            time.sleep(self.delay)
-            return self.current_state, self.current_reward, terminated, truncated, {}
+            self.current_action = random_action
 
         # Elegir quedarse en la misma posición o ir a una diferente a la elegida por la acción
         else:
             # Ir a la dirección esperada por la acción
             print(self.current_action, self.current_energy, self.current_state)
-            self.current_state = self.P[self.current_state][self.current_action][0][1]
-            self.current_reward = self.P[self.current_state][self.current_action][0][2]
-            terminated = self.P[self.current_state][self.current_action][0][3]
-            self.world.update(
-                self.current_state,
-                self.current_action,
-                self.current_reward,
-                terminated
-            )
+            self.current_action = action
 
-            self.render()
-            time.sleep(self.delay)
-            return self.current_state, self.current_reward, terminated, truncated, {}
+        self.current_state = self.P[self.current_state][self.current_action][0][1]
+        self.current_reward = self.P[self.current_state][self.current_action][0][2]
+        terminated = self.P[self.current_state][self.current_action][0][3]
+
+        self.world.update(
+            self.current_state,
+            self.current_action,
+            self.current_reward,
+            terminated
+        )
+
+        self.current_energy -= 2 * 0.7
+
+        if self.current_energy <= 0:
+            truncated = True
+
+        self.render()
+        time.sleep(self.delay)
+        return self.current_state, self.current_reward, terminated, truncated, {}
 
     def render(self):
         self.world.render()
