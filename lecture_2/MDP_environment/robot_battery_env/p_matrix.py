@@ -1,4 +1,4 @@
-
+import pygame
 class P:
     def __init__(self, actions=4, n=16):
         self.actions = actions

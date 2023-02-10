@@ -3,6 +3,7 @@ import os
 import gym
 import gym_environments
 import time
+import robot_battery_env
 from agent import ValueIteration
 
 # Allowing environment to have sounds

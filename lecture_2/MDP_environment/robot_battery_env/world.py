@@ -7,7 +7,7 @@ class World:
     def __init__(self, title, state, action):
         pygame.init()
         pygame.display.init()
-        pygame.mixer.music.play(loops=-1)
+        #pygame.mixer.music.play(loops=-1)
         self.render_surface = pygame.Surface(
             (settings.VIRTUAL_WIDTH, settings.VIRTUAL_HEIGHT)
         )
@@ -42,7 +42,7 @@ class World:
     def update(self, state, action, reward, terminated):
         if terminated and state == self.finish_state:
             self.render_goal = False
-            settings.SOUNDS['win'].play()
+            #settings.SOUNDS['win'].play()
 
         self.state = state
         self.action = action
@@ -77,7 +77,7 @@ class World:
         pygame.display.update()
     
     def close(self):
-        pygame.mixer.music.stop()
-        pygame.mixer.quit()
+        # pygame.mixer.music.stop()
+        # pygame.mixer.quit()
         pygame.display.quit()
         pygame.quit()
