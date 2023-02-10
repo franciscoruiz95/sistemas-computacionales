@@ -76,8 +76,8 @@ VIRTUAL_WIDTH = TILE_SIZE * COLS
 VIRTUAL_HEIGHT = TILE_SIZE * ROWS
 
 # Scale factor between virtual screen and window
-H_SCALE = 4
-V_SCALE = 4
+H_SCALE = 1
+V_SCALE = 1
 
 # Resolution of the actual window
 WINDOW_WIDTH = VIRTUAL_WIDTH * H_SCALE
