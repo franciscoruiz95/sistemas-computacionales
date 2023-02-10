@@ -27,7 +27,7 @@ class RobotBattery(gym.Env):
             self.current_state,
             self.current_action
         )
-        self.initial_energy = 100
+        self.initial_energy = 100.0
         self.current_energy = self.initial_energy
 
     def reset(self, seed=None, options=None):
@@ -52,16 +52,21 @@ class RobotBattery(gym.Env):
             random_action = np.random.random_integers(0, 3)
             print(random_action, self.current_energy, self.current_state)
             self.current_action = random_action
+            prob = self.P[self.current_state][self.current_action]
 
         # Elegir quedarse en la misma posición o ir a una diferente a la elegida por la acción
         else:
             # Ir a la dirección esperada por la acción
             print(self.current_action, self.current_energy, self.current_state)
             self.current_action = action
+            prob = self.P[self.current_state][self.current_action]
 
-        self.current_state = self.P[self.current_state][self.current_action][0][1]
-        self.current_reward = self.P[self.current_state][self.current_action][0][2]
-        terminated = self.P[self.current_state][self.current_action][0][3]
+        p, self.current_state, self.current_reward, terminated = prob[0]
+
+        self.current_energy -= 2 * 0.7
+
+        if self.current_energy <= 0.0:
+            truncated = True
 
         self.world.update(
             self.current_state,
@@ -69,11 +74,6 @@ class RobotBattery(gym.Env):
             self.current_reward,
             terminated
         )
-
-        self.current_energy -= 2 * 0.7
-
-        if self.current_energy <= 0:
-            truncated = True
 
         self.render()
         time.sleep(self.delay)
