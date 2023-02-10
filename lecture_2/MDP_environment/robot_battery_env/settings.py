@@ -52,7 +52,7 @@ TEXTURES = {
 }
 
 FONTS = {
-    'font': pygame.font.Font(BASE_DIR / "assets"/ "fonts" / "font.ttf", 64)
+    'font': pygame.font.Font(BASE_DIR / "assets"/ "fonts" / "font.ttf", 40)
 }
 
 GAME_OVER_WIDTH, GAME_OVE_HEIGHT = TEXTURES['game_over'].get_size()

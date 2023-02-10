@@ -58,18 +58,18 @@ class World:
         self.tilemap.render(self.render_surface)
 
         if self.current_energy > 0.5*self.initial_energy or not self.render_battery:
-            self.render_surface.blit(settings.TEXTURES['level_full_battery'], (settings.WINDOW_WIDTH/2, 0))
+            self.render_surface.blit(settings.TEXTURES['level_full_battery'], (settings.WINDOW_WIDTH//2, 0))
         elif self.current_energy > 0.1*self.initial_energy and self.current_energy <= 0.5*self.initial_energy:
-            self.render_surface.blit(settings.TEXTURES['level_mid_battery'], (settings.WINDOW_WIDTH/2, 0))
+            self.render_surface.blit(settings.TEXTURES['level_mid_battery'], (settings.WINDOW_WIDTH//2, 0))
         else:
-            self.render_surface.blit(settings.TEXTURES['level_low_battery'], (settings.WINDOW_WIDTH/2, 0))
+            self.render_surface.blit(settings.TEXTURES['level_low_battery'], (settings.WINDOW_WIDTH//2, 0))
             settings.SOUNDS['low_battery'].play()
         
         if not self.render_battery:
             self.current_energy = self.initial_energy
             self.render_surface.blit(
                 settings.TEXTURES['win'],
-                ((settings.WINDOW_WIDTH - settings.WIN_WIDTH)//2, (settings.WINDOW_HEIGHT - settings.WIN_HEIGHT)//2)
+                ((settings.WINDOW_WIDTH - settings.WIN_WIDTH)//2 , (settings.WINDOW_HEIGHT - settings.WIN_HEIGHT)//2)
             )
         
         if self.current_energy < 0:
@@ -82,7 +82,7 @@ class World:
 
         text_obj = settings.FONTS['font'].render(f"{int(self.current_energy)} %", False, (246, 0, 139))
         text_rect = text_obj.get_rect()
-        text_rect.center = (settings.VIRTUAL_WIDTH/2 + 32, 50)
+        text_rect.center = (settings.WINDOW_WIDTH//2 + 15, 45)
         self.render_surface.blit(text_obj, text_rect)
 
         if self.render_battery:
