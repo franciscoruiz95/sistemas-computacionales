@@ -7,7 +7,7 @@ class World:
     def __init__(self, title, state, action, initial_energy):
         pygame.init()
         pygame.display.init()
-        #pygame.mixer.music.play(loops=-1)
+        pygame.mixer.music.play(loops=-1)
         self.screen = pygame.display.set_mode(
             (settings.WINDOW_WIDTH, settings.WINDOW_HEIGHT)
         )
@@ -46,7 +46,7 @@ class World:
     def update(self, state, action, reward, terminated, energy):
         if terminated and state == self.finish_state:
             self.render_battery = False
-            #settings.SOUNDS['win'].play()
+            settings.SOUNDS['win'].play()
 
         self.current_energy = energy
         self.state = state
@@ -63,6 +63,7 @@ class World:
             self.render_surface.blit(settings.TEXTURES['level_mid_battery'], (settings.WINDOW_WIDTH/2, 0))
         else:
             self.render_surface.blit(settings.TEXTURES['level_low_battery'], (settings.WINDOW_WIDTH/2, 0))
+            settings.SOUNDS['low_battery'].play()
         
         if not self.render_battery:
             self.current_energy = self.initial_energy
@@ -76,6 +77,9 @@ class World:
                 settings.TEXTURES['game_over'],
                 ((settings.WINDOW_WIDTH - settings.GAME_OVER_WIDTH)//2, (settings.WINDOW_HEIGHT - settings.GAME_OVE_HEIGHT)//2)
             )
+            pygame.mixer.music.stop()
+            settings.SOUNDS['over'].play()
+
         text_obj = settings.FONTS['font'].render(f"{int(self.current_energy)} %", False, (246, 0, 139))
         text_rect = text_obj.get_rect()
         text_rect.center = (settings.VIRTUAL_WIDTH/2 + 32, 50)
@@ -94,6 +98,7 @@ class World:
                 (self.tilemap.tiles[self.state].x,
                 self.tilemap.tiles[self.state].y)
             )
+            #settings.SOUNDS['step'].play()
 
         self.screen.blit(
             pygame.transform.scale(
@@ -106,7 +111,7 @@ class World:
         pygame.display.update()
     
     def close(self):
-        # pygame.mixer.music.stop()
-        # pygame.mixer.quit()
+        pygame.mixer.music.stop()
+        pygame.mixer.quit()
         pygame.display.quit()
         pygame.quit()

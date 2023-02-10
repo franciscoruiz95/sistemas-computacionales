@@ -2,6 +2,8 @@ import pathlib
 import pygame
 from robot_battery_env.p_matrix import PMatrix
 
+pygame.init()
+pygame.mixer.init()
 pygame.font.init()
 
 BASE_DIR = pathlib.Path(__file__).parent
@@ -55,10 +57,14 @@ FONTS = {
 
 GAME_OVER_WIDTH, GAME_OVE_HEIGHT = TEXTURES['game_over'].get_size()
 WIN_WIDTH, WIN_HEIGHT = TEXTURES['win'].get_size()
-# Initializing the mixer
-# pygame.mixer.init()
 
-# # Sound effects
-# SOUNDS = {
-#     'win': pygame.mixer.Sound(BASE_DIR / "assets" / "sounds" / "win.ogg")
-# }
+# Loading music
+pygame.mixer.music.load(BASE_DIR / "assets" / "sounds" / "success_environment.mp3")
+
+# Sound effects
+SOUNDS = {
+    'low_battery': pygame.mixer.Sound(BASE_DIR / "assets" / "sounds" / "low_battery.wav"),
+    'over': pygame.mixer.Sound(BASE_DIR / "assets" / "sounds" / "over.wav"),
+    'step': pygame.mixer.Sound(BASE_DIR / "assets" / "sounds" / "step.wav"),
+    'win': pygame.mixer.Sound(BASE_DIR / "assets" / "sounds" / "win.wav")
+}
