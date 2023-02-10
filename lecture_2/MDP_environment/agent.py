@@ -17,7 +17,7 @@ class ValueIteration():
         return int(self.policy[state])
 
     def render(self):
-        print("Values: {}, Policy: {}".format(self.values, self.policy))
+        print("Values: {}, Policy: {}, size: {}".format(self.values, self.policy, len(self.policy)))
 
     def solve(self, iterations):
         for _ in range(iterations):

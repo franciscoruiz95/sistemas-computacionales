@@ -22,13 +22,14 @@ class RobotBattery(gym.Env):
         self.current_reward = 0.0
         self.delay = settings.DEFAULT_DELAY
         self.P = settings.P
+        self.initial_energy = 100.0
+        self.current_energy = self.initial_energy
         self.world = World(
             "Robot Battery Environment",
             self.current_state,
-            self.current_action
+            self.current_action,
+            self.initial_energy
         )
-        self.initial_energy = 100.0
-        self.current_energy = self.initial_energy
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -72,7 +73,8 @@ class RobotBattery(gym.Env):
             self.current_state,
             self.current_action,
             self.current_reward,
-            terminated
+            terminated,
+            self.current_energy
         )
 
         self.render()

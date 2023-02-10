@@ -10,7 +10,7 @@ from agent import ValueIteration
 if "SDL_AUDIODRIVER" in os.environ:
     del os.environ["SDL_AUDIODRIVER"]
 
-# RobotBattery-v0, FrozenLake-v1, FrozenLake-v2
+# RobotBattery-v0, 'RobotBattery-v1', FrozenLake-v1, FrozenLake-v2
 env = gym.make('RobotBattery-v1', render_mode="human")
 agent = ValueIteration(env.observation_space.n, env.action_space.n, env.P, 0.9)
 
@@ -23,9 +23,9 @@ terminated, truncated = False, False
 env.render()
 time.sleep(2)
 
-while not (terminated or truncated):
+while not ((terminated) or truncated):
     action = agent.get_action(observation)
     observation, _, terminated, truncated, _ = env.step(action)
 
-time.sleep(2)
+time.sleep(5)
 env.close()

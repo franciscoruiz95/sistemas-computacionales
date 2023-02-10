@@ -1,5 +1,5 @@
 import pygame
-class P:
+class PMatrix:
     def __init__(self, actions=4, n=16):
         self.actions = actions
         self.n = n
