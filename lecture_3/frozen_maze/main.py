@@ -2,7 +2,7 @@ import gym
 import time
 import gym_environments
 from agent import MonteCarlo
-import frozen_maze_evn
+from frozen_maze_evn.frozen_maze import FrozenMazeEnv
 
 
 def train(env, agent, episodes):

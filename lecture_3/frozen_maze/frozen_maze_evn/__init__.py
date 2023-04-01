@@ -1,3 +1,11 @@
-from frozen_maze_evn.frozen_maze import FrozenMazeEnv as FrozenMazeEnvV0
+import os
+from gym.envs.registration import register
 
-(FrozenMazeEnvV0)
+# Allowing environment to have sounds
+if "SDL_AUDIODRIVER" in os.environ:
+    del os.environ["SDL_AUDIODRIVER"]
+
+register(
+    id="FrozenMaze-v0",
+    entry_point='frozen_maze_evn.frozen_maze:FrozenMazeEnv'
+)
