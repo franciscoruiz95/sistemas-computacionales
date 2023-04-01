@@ -43,33 +43,6 @@ class World:
 
         self.tilemap = TileMap(tile_texture_names)
 
-        i, j = (0, 0)
-        for row in self.maze.grid:
-            for cell in row:
-                state = i * settings.COLS + j
-                None if cell & S != 0 \
-                    else \
-                        self.render_surface.blit(
-                            settings.TEXTURES["wall_h"],
-                                (self.tilemap.tiles[state].x, self.tilemap.tiles[state].y),
-                        )
-                if cell & E != 0:
-                    None if (cell | row[row.index(cell)+1]) & S != 0 \
-                        else \
-                            self.render_surface.blit(
-                                settings.TEXTURES["wall_h"],
-                                    (self.tilemap.tiles[state].x, self.tilemap.tiles[state].y),
-                            )
-                else:
-                    self.render_surface.blit(
-                        settings.TEXTURES["wall_v"],
-                            (self.tilemap.tiles[state].x, self.tilemap.tiles[state].y),
-                    )
-
-                j += 1
-            i += 1
-
-
     def reset(self, state, action):
         self.state = state
         self.action = action
@@ -98,6 +71,8 @@ class World:
 
         self.tilemap.render(self.render_surface)
 
+        self._create_walls()
+
         self.render_surface.blit(
             settings.TEXTURES["stool"],
             (self.tilemap.tiles[0].x, self.tilemap.tiles[0].y),
@@ -124,6 +99,34 @@ class World:
 
         pygame.event.pump()
         pygame.display.update()
+
+    def _create_walls(self):
+        i, j = (0, 0)
+        for row in self.maze.grid:
+            for cell in row:
+                state = i * settings.COLS + j
+                None if cell & S != 0 \
+                    else \
+                        self.render_surface.blit(
+                            settings.TEXTURES["wall_h"],
+                                (self.tilemap.tiles[state].x, self.tilemap.tiles[state].y + 16),
+                        )
+                if cell & E != 0:
+                    None if (cell | row[row.index(cell)+1]) & S != 0 \
+                        else \
+                            self.render_surface.blit(
+                                settings.TEXTURES["wall_h"],
+                                    (self.tilemap.tiles[state].x, self.tilemap.tiles[state].y + 16),
+                            )
+                else:
+                    self.render_surface.blit(
+                        settings.TEXTURES["wall_v"],
+                            (self.tilemap.tiles[state].x + 16 , self.tilemap.tiles[state].y),
+                    )
+
+                j += 1
+            j = 0
+            i += 1
 
     def close(self):
         pygame.mixer.music.stop()

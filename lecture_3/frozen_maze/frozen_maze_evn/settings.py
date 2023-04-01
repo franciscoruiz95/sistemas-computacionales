@@ -46,7 +46,7 @@ TEXTURES = {
         pygame.image.load(BASE_DIR / "assets" / "graphics" / "elf_up.png"),
     ],
     "wall_h": pygame.image.load(BASE_DIR / "assets" / "graphics" / "wall_h.png"),
-    "wall_v": pygame.image.load(BASE_DIR / "assets" / "graphics" / "wall_h.png"),
+    "wall_v": pygame.image.load(BASE_DIR / "assets" / "graphics" / "wall_v.png"),
 }
 
 # Initializing the mixer

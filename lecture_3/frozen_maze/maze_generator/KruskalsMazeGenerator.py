@@ -44,8 +44,8 @@ class KruskalsMazeGenerate:
 
     # build the list of edges
     def _create_edges(self) -> None:
-        for y in range(height):
-            for x in range(width):
+        for y in range(self.height):
+            for x in range(self.width):
                 if y > 0:
                     self.edges.append((x, y, N))
                 if x > 0:
@@ -62,8 +62,8 @@ class KruskalsMazeGenerate:
             set1, set2 = self.sets[y][x], self.sets[ny][nx]
 
             if not set1.connected(set2):
-                self.display_maze()
-                time.sleep(delay)
+                #self.display_maze()
+                #time.sleep(delay)
 
                 set1.connect(set2)
                 self.grid[y][x] |= direction

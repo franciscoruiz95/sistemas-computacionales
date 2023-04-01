@@ -32,7 +32,7 @@ if __name__ == "__main__":
         env.observation_space.n, env.action_space.n, gamma=0.9, epsilon=0.9
     )
 
-    train(env, agent, episodes=10)
+    train(env, agent, episodes=100)
     agent.render()
 
     play(env, agent)
