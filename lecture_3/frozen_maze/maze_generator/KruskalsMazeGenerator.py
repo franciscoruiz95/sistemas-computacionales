@@ -70,6 +70,7 @@ class KruskalsMazeGenerate:
         self.grid = [[0] * self.width for _ in range(self.height)]
         self.sets = [[Tree() for _ in range(self.width)] for _ in range(self.height)]
         self.walls = {i : {'N': 1 if i in range(width) else 0, 'S': 0, 'W': 1 if (i + width ) % width == 0 else 0, 'E': 0} for i in range(width * height)}
+        self.path = {}
 
     # build the list of edges
     def _create_edges(self) -> None:
@@ -102,6 +103,53 @@ class KruskalsMazeGenerate:
         print(self.grid)
 
 
+    # def dijkstra(self, start, goal):
+    #     width = len(self.grid[0])
+    #     height = len(self.grid)
+    #     costs = [[float('inf')] * width for _ in range(height)]
+    #     costs[start[1]][start[0]] = 0
+    #     visited = [[False] * width for _ in range(height)]
+    #     pq = [(0, start)]
+    #     path = {}
+
+    #     while pq:
+    #         current_cost, current = heapq.heappop(pq)
+    #         if current == goal:
+    #             break
+    #         if visited[current[1]][current[0]]:
+    #             continue
+    #         visited[current[1]][current[0]] = True
+
+    #         for dx, dy in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
+    #             nx, ny = current[0] + dx, current[1] + dy
+    #             if nx < 0 or ny < 0 or nx >= width or ny >= height or visited[ny][nx]:
+    #                 continue
+
+    #             cost = current_cost + 1
+    #             if (self.grid[current[1]][current[0]] & E and dx == 1) or \
+    #             (self.grid[current[1]][current[0]] & S and dy == 1) or \
+    #             (nx > 0 and self.grid[ny][nx - 1] & E and dx == -1) or \
+    #             (ny > 0 and self.grid[ny - 1][nx] & S and dy == -1):
+    #                 cost += 1
+
+    #             if cost < costs[ny][nx]:
+    #                 costs[ny][nx] = cost
+    #                 heapq.heappush(pq, (cost, (nx, ny)))
+    #                 path[(nx, ny)] = current
+
+    #     if goal not in path:
+    #         return None
+
+    #     # Construct path from start to goal
+    #     current = goal
+    #     path_to_goal = [current]
+    #     while current != start:
+    #         current = path[current]
+    #         path_to_goal.append(current)
+    #     path_to_goal.reverse()
+
+    #     return path_to_goal
+
     def dijkstra(self, start, goal):
         width = len(self.grid[0])
         height = len(self.grid)
@@ -109,7 +157,6 @@ class KruskalsMazeGenerate:
         costs[start[1]][start[0]] = 0
         visited = [[False] * width for _ in range(height)]
         pq = [(0, start)]
-        path = {}
 
         while pq:
             current_cost, current = heapq.heappop(pq)
@@ -124,6 +171,16 @@ class KruskalsMazeGenerate:
                 if nx < 0 or ny < 0 or nx >= width or ny >= height or visited[ny][nx]:
                     continue
 
+                # Check if there is a wall between the current node and its neighbor
+                if dx == 1 and self.walls[current[1] * width + current[0]]["E"] == 1:
+                    continue
+                elif dx == -1 and self.walls[current[1] * width + nx]["E"] == 1:
+                    continue
+                elif dy == 1 and self.walls[current[1] * width + current[0]]["S"] == 1:
+                    continue
+                elif dy == -1 and self.walls[ny * width + current[0]]["S"] == 1:
+                    continue
+
                 cost = current_cost + 1
                 if (self.grid[current[1]][current[0]] & E and dx == 1) or \
                 (self.grid[current[1]][current[0]] & S and dy == 1) or \
@@ -134,20 +191,11 @@ class KruskalsMazeGenerate:
                 if cost < costs[ny][nx]:
                     costs[ny][nx] = cost
                     heapq.heappush(pq, (cost, (nx, ny)))
-                    path[(nx, ny)] = current
+                    self.path[(nx, ny)] = current
 
-        if goal not in path:
+        pprint.pprint(self.path)
+        if goal not in self.path:
             return None
-
-        # Construct path from start to goal
-        current = goal
-        path_to_goal = [current]
-        while current != start:
-            current = path[current]
-            path_to_goal.append(current)
-        path_to_goal.reverse()
-
-        return path_to_goal
 
 
     def display_maze(self) -> None:
@@ -214,13 +262,16 @@ class KruskalsMazeGenerate:
 
  
 
-maze = KruskalsMazeGenerate(3, 3)
+maze = KruskalsMazeGenerate(4, 4)
 maze.generate()
 print("\033[2J") # clear the screen
-path = maze.dijkstra((0, 0), (2, 2))
+# path = maze.dijkstra((0, 0), (2, 2))
 # print('path = ', path)
 maze.display_maze()
 maze.buildWalls()
+
+print('Aqui estoy')
+maze.dijkstra((0, 0), (3, 3))
 
 # 5. Show the parameters used to build this maze, for repeatability
 
