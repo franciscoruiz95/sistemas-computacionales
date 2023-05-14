@@ -1,43 +1,72 @@
 import numpy as np
+from maze_generator.KruskalsMazeGenerator import KruskalsMazeGenerate as  KMaze
 
-# Define the size of the FrozenLake grid
-n = 15
 
-# Define the number of possible actions in the FrozenLake environment
-num_actions = 4
+#Generate random P matrix
+class PMatrix:
+    def __init__(self, width=4, height=4, actions=4, n=16):
+        self.actions = actions
+        self.n = n
+        self.states = pow(n, 2)
+        self.maze = KMaze(width, height)
+        self.holes = self.__generate_random_holes()
 
-# Define the probability of taking the intended action
-p_intended = 0.8
+        # P matrix
+        self.P = {
+                    s : {
+                            a : [
+                                (0.33, self.__next_state(s, a), self.__reward(s, a), self.__is_terminal(s, a)) 
+                            ] for a in range(self.actions)
+                        } for s in range(self.states) 
+                }
 
-# Define the probability of taking a random action
-p_random = (1 - p_intended) / (num_actions - 1)
+    def __next_state(self, current_state, action):
+        row = current_state // self.n
+        col = current_state % self.n
 
-# Create a random P matrix
-P = np.zeros((n*n, num_actions, n*n))
-for s in range(n*n):
-    for a in range(num_actions):
-        next_s = s
-        # Move up
-        if a == 0:
-            next_s -= n
-        # Move down
-        elif a == 1:
-            next_s += n
-        # Move left
-        elif a == 2:
-            next_s -= 1
-        # Move right
-        elif a == 3:
-            next_s += 1
-        # Check if the next state is a wall or outside the grid
-        if next_s < 0 or next_s >= n*n or (s % n == 0 and a == 2) or ((s+1) % n == 0 and a == 3) or (s < n and a == 0) or (s >= n*(n-1) and a == 1):
-            next_s = s
-        # Set the probability of taking the intended action
-        P[s, a, next_s] = p_intended
-        # Set the probability of taking a random action
-        for other_a in range(num_actions):
-            if other_a != a:
-                P[s, a, s] += p_random
+        if (current_state == 0 and action in [0 , 3]) or \
+                (current_state == self.n-1 and action == 2) or \
+                        (row == 0 and action == 3)      or \
+                            (current_state == self.states - 1)  or \
+                                (row == self.n-1 and action == 1) or\
+                                    (current_state == self.states - self.n and action in [0, 1]) or\
+                                        (col == 0 and action == 0) or \
+                                            (col == self.n - 1 and action == 2):
+            return current_state
 
-# Print the P matrix
-print(P)
+        if (row >= 0 and row <= self.n - 1 and action == 0):
+            return current_state - 1
+
+        if (row >= 0 and row <= self.n - 2 and action == 1):
+            return current_state + self.n
+
+        if (row >= 0 and row <= self.n - 1 and action == 2):
+            return current_state + 1
+
+        if (row > 0 and row <= self.n - 1 and action == 3):
+            return current_state - self.n
+
+
+    def __reward(self, current_state, action):
+        return 1.0 \
+            if (current_state == self.states-self.n-1 and action == 1) or \
+                (current_state == self.states-2 and action == 2) \
+            else 0.0
+
+    def __is_terminal(self, current_state, action):
+        return True\
+            if (current_state == self.states-self.n-1 and action == 1) or \
+                    (current_state == self.states-2 and action == 2) or\
+                        (current_state == self.states-1)\
+            else False
+    
+    def __generate_random_holes(self):
+        return np.random.choice(range(1, self.n-1), int(self.n * 0.25), replace=False)
+    
+    # def __path(self):
+    #     path = self.__dijkstrac()
+    #     return path
+    
+    # #dijkstrac's algorithm
+    # def __dijkstrac():
+    #     return
