@@ -1,13 +1,15 @@
+import numpy as np
+import random 
 import pathlib
-
 import pygame
 
 # Size of the square tiles used in this environment.
 TILE_SIZE = 32
 
 # Grid
-ROWS = 4
-COLS = 4
+ROWS = np.random.randint(2, 20)
+COLS = np.random.randint(2, 20)
+
 
 NUM_TILES = ROWS * COLS
 NUM_ACTIONS = 4

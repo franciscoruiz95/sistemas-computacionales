@@ -1,13 +1,13 @@
 import numpy as np
-from maze_generator.KruskalsMazeGenerator import KruskalsMazeGenerate as  KMaze
-
+import pprint
+from KruskalsMazeGenerator import KruskalsMazeGenerate as KMaze
 
 #Generate random P matrix
 class PMatrix:
     def __init__(self, width=4, height=4, actions=4, n=16):
         self.actions = actions
         self.n = n
-        self.states = pow(n, 2)
+        self.states = width * height
         self.maze = KMaze(width, height)
         self.holes = self.__generate_random_holes()
 
@@ -61,12 +61,25 @@ class PMatrix:
             else False
     
     def __generate_random_holes(self):
-        return np.random.choice(range(1, self.n-1), int(self.n * 0.25), replace=False)
+        # Random states list size
+        n_holes = int(self.states * 0.15)
+
+        # List to save random states that are not on path
+        random_holes = []
+
+        # Generate random points until you have n_holes that are not in path
+        while len(random_holes) < n_holes:
+            # Generate a random state
+            random_hole = np.random.choice(range(1, self.states-1), replace=False)
+            # Check if random states is not in path
+            if random_hole not in self.maze.path:
+                random_holes.append(random_hole)
+
+        return random_holes
     
-    # def __path(self):
-    #     path = self.__dijkstrac()
-    #     return path
-    
-    # #dijkstrac's algorithm
-    # def __dijkstrac():
-    #     return
+
+p = PMatrix(width=4, height=4, actions=4, n=16)
+
+pprint.pprint(p.maze.path)
+pprint.pprint(p.holes)
+

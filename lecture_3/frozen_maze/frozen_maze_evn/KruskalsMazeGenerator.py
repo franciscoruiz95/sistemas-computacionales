@@ -70,7 +70,9 @@ class KruskalsMazeGenerate:
         self.grid = [[0] * self.width for _ in range(self.height)]
         self.sets = [[Tree() for _ in range(self.width)] for _ in range(self.height)]
         self.walls = {i : {'N': 1 if i in range(width) else 0, 'S': 0, 'W': 1 if (i + width ) % width == 0 else 0, 'E': 0} for i in range(width * height)}
-        self.path = {}
+        self.generate()
+        self.build_walls()
+        self.path = self.find_path(self.state_to_point(0), self.state_to_point((width * height) - 1))
 
     # build the list of edges
     def _create_edges(self) -> None:
@@ -92,65 +94,43 @@ class KruskalsMazeGenerate:
             set1, set2 = self.sets[y][x], self.sets[ny][nx]
 
             if not set1.connected(set2):
-                #self.display_maze()
-                #time.sleep(delay)
-
                 set1.connect(set2)
-                # print("GRID ORIGINAL = ", self.grid)
                 self.grid[y][x] |= direction
-                # print("GRID = ", self.grid, "DIRECTIONS = ", direction, "GRID[y][x] = ", self.grid[y][x], "Y, X = ", y, x)
                 self.grid[ny][nx] |= OPPOSITE[direction]
-        print(self.grid)
 
+    def build_walls(self) -> None:
+        i, j = (0, 0)
+        for row in self.grid:
+            for cell in row:
+                state = i * self.width + j
+                if cell & S != 0:
+                    self.walls[state]['S'] = 0
+                else:
+                    self.walls[state]['S'] = 1
+                    if i < self.height - 1:
+                        self.walls[state + self.width]['N'] = 1
 
-    # def dijkstra(self, start, goal):
-    #     width = len(self.grid[0])
-    #     height = len(self.grid)
-    #     costs = [[float('inf')] * width for _ in range(height)]
-    #     costs[start[1]][start[0]] = 0
-    #     visited = [[False] * width for _ in range(height)]
-    #     pq = [(0, start)]
-    #     path = {}
+                # print(" " if cell & S != 0 else "_", end="")
+                if cell & E != 0:
+                    if (cell | row[row.index(cell)+1]) & S != 0:
+                        if self.walls[state]['S'] != 1:
+                            self.walls[state]['S'] = 0
+                    else:
+                        self.walls[state]['S'] = 1
+                        if i < self.height - 1:
+                            self.walls[state + self.width]['N'] = 1
+                    # print(" " if (cell | row[row.index(cell)+1]) & S != 0 else "_", end="")
+                else:
+                    self.walls[state]['E'] = 1
+                    if state < (self.width * self.height) - 1:
+                        self.walls[state + 1]['W'] = 1
+                    # print("|", end="")
+                j += 1
+            j = 0
+            i += 1
 
-    #     while pq:
-    #         current_cost, current = heapq.heappop(pq)
-    #         if current == goal:
-    #             break
-    #         if visited[current[1]][current[0]]:
-    #             continue
-    #         visited[current[1]][current[0]] = True
-
-    #         for dx, dy in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
-    #             nx, ny = current[0] + dx, current[1] + dy
-    #             if nx < 0 or ny < 0 or nx >= width or ny >= height or visited[ny][nx]:
-    #                 continue
-
-    #             cost = current_cost + 1
-    #             if (self.grid[current[1]][current[0]] & E and dx == 1) or \
-    #             (self.grid[current[1]][current[0]] & S and dy == 1) or \
-    #             (nx > 0 and self.grid[ny][nx - 1] & E and dx == -1) or \
-    #             (ny > 0 and self.grid[ny - 1][nx] & S and dy == -1):
-    #                 cost += 1
-
-    #             if cost < costs[ny][nx]:
-    #                 costs[ny][nx] = cost
-    #                 heapq.heappush(pq, (cost, (nx, ny)))
-    #                 path[(nx, ny)] = current
-
-    #     if goal not in path:
-    #         return None
-
-    #     # Construct path from start to goal
-    #     current = goal
-    #     path_to_goal = [current]
-    #     while current != start:
-    #         current = path[current]
-    #         path_to_goal.append(current)
-    #     path_to_goal.reverse()
-
-    #     return path_to_goal
-
-    def dijkstra(self, start, goal):
+    #find the way in the grid perceiving the walls
+    def find_path(self, start, goal):
         costs = [[float('inf')] * self.width for _ in range(self.height)]
         costs[start[1]][start[0]] = 0
         visited = [[False] * self.width for _ in range(self.height)]
@@ -192,7 +172,6 @@ class KruskalsMazeGenerate:
                     heapq.heappush(pq, (cost, (nx, ny)))
                     path[(ny, nx)] = (current[1], current[0])
 
-        pprint.pprint(path)
         if goal not in path:
             return None
 
@@ -203,11 +182,7 @@ class KruskalsMazeGenerate:
             node = path[node]
             path_array.append(node)
 
-        pprint.pprint(path_array[::-1])
-
-        self.path = [self.__linearize_point(point) for point in path_array[::-1]]
-        pprint.pprint(self.path)
-
+        return [self.point_to_state(point) for point in path_array[::-1]]
 
     def display_maze(self) -> None:
         print("\033[H") # move to upper-left
@@ -226,41 +201,11 @@ class KruskalsMazeGenerate:
                     print("\033[m", end="")
             print()
 
-    def buildWalls(self) -> None:
-        i, j = (0, 0)
-        for row in self.grid:
-            for cell in row:
-                state = i * self.width + j
-                if cell & S != 0:
-                    self.walls[state]['S'] = 0
-                else:
-                    self.walls[state]['S'] = 1
-                    if i < self.height - 1:
-                        self.walls[state + self.width]['N'] = 1
-
-                # print(" " if cell & S != 0 else "_", end="")
-                if cell & E != 0:
-                    if (cell | row[row.index(cell)+1]) & S != 0:
-                        if self.walls[state]['S'] != 1:
-                            self.walls[state]['S'] = 0
-                    else:
-                        self.walls[state]['S'] = 1
-                        if i < self.height - 1:
-                            self.walls[state + self.width]['N'] = 1
-                    # print(" " if (cell | row[row.index(cell)+1]) & S != 0 else "_", end="")
-                else:
-                    self.walls[state]['E'] = 1
-                    if state < (self.width * self.height) - 1:
-                        self.walls[state + 1]['W'] = 1
-                    # print("|", end="")
-                j += 1
-            j = 0
-            i += 1
-        pprint.pprint(self.grid)
-        pprint.pprint(self.walls)
-
-    def __linearize_point(self, point):
+    def point_to_state(self, point):
         return point[0] * self.width + point[1]
+    
+    def state_to_point(self, state):
+        return (state // self.width, state % self.width)
 
 
     
@@ -276,16 +221,16 @@ class KruskalsMazeGenerate:
  
 
 maze = KruskalsMazeGenerate(4, 4)
-maze.generate()
 print("\033[2J") # clear the screen
-# path = maze.dijkstra((0, 0), (2, 2))
-# print('path = ', path)
-maze.display_maze()
-maze.buildWalls()
+# # path = maze.dijkstra((0, 0), (2, 2))
+# # print('path = ', path)
+#maze.display_maze()
+# maze.build_walls()
 
-print('Aqui estoy')
-maze.dijkstra((0, 0), (3, 3))
+# print('Aqui estoy')
+# maze.find_path((0, 0), (3, 3))
 
+# pprint.pprint(maze.state_to_point(15))
 # 5. Show the parameters used to build this maze, for repeatability
 
 # print(f"{sys.argv[0]} {width} {height} {seed}")
