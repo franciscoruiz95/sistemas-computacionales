@@ -25,6 +25,7 @@ class World:
         self.tilemap = None
         self.finish_state = None
         self.maze = Maze(settings.ROWS, settings.COLS)
+        self.maze.display_maze()
         #self.maze.generate()
         self._create_tilemap()
         print(settings.ROWS, settings.COLS)
@@ -112,13 +113,8 @@ class World:
                             settings.TEXTURES["wall_h"],
                                 (self.tilemap.tiles[state].x, self.tilemap.tiles[state].y + 16),
                         )
-                if cell & E != 0:
-                    None if (cell | row[row.index(cell)+1]) & S != 0 \
-                        else \
-                            self.render_surface.blit(
-                                settings.TEXTURES["wall_h"],
-                                    (self.tilemap.tiles[state].x, self.tilemap.tiles[state].y + 16),
-                            )
+                if cell & E != 0: 
+                    None
                 else:
                     self.render_surface.blit(
                         settings.TEXTURES["wall_v"],

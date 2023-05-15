@@ -62,7 +62,7 @@ class Tree:
         tree.root().parent = self
 
 class KruskalsMazeGenerate:
-    def __init__(self, width, height) -> None:
+    def __init__(self, height, width) -> None:
         self.width = width
         self.height = height
         self.edges = []
