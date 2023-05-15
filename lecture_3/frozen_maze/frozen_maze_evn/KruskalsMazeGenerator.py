@@ -62,7 +62,7 @@ class Tree:
         tree.root().parent = self
 
 class KruskalsMazeGenerate:
-    def __init__(self, height, width) -> None:
+    def __init__(self, width, height) -> None:
         self.width = width
         self.height = height
         self.edges = []
@@ -220,8 +220,8 @@ class KruskalsMazeGenerate:
 
  
 
-maze = KruskalsMazeGenerate(4, 4)
-print("\033[2J") # clear the screen
+#maze = KruskalsMazeGenerate(4, 4)
+#print("\033[2J") # clear the screen
 # # path = maze.dijkstra((0, 0), (2, 2))
 # # print('path = ', path)
 #maze.display_maze()
