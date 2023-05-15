@@ -7,8 +7,8 @@ import pygame
 TILE_SIZE = 32
 
 # Grid
-ROWS = np.random.randint(2, 20)
-COLS = np.random.randint(2, 20)
+ROWS = np.random.randint(2, 10)
+COLS = np.random.randint(2, 10)
 
 
 NUM_TILES = ROWS * COLS
@@ -24,8 +24,8 @@ H_SCALE = 4
 V_SCALE = 4
 
 # Resolution of the actual window
-WINDOW_WIDTH = VIRTUAL_WIDTH * H_SCALE
-WINDOW_HEIGHT = VIRTUAL_HEIGHT * V_SCALE
+WINDOW_WIDTH = VIRTUAL_WIDTH *2
+WINDOW_HEIGHT = VIRTUAL_HEIGHT * 2
 
 # Default pause time between steps (in seconds)
 DEFAULT_DELAY = 0.5

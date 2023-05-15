@@ -15,8 +15,11 @@ class PMatrix:
         self.P = {
                     s : {
                             a : [
-                                (0.33, self.__next_state(s, a), self.__reward(s, a), self.__is_terminal(s, a)) 
-                            ] for a in range(self.actions)
+                                    (1.0, s, 0, True)
+                                ] if s in self.maze.path else\
+                                [
+                                    (1.0, self.__next_state(s, a), self.__reward(s, a), self.__is_terminal(s, a))
+                                ] for a in range(self.actions)
                         } for s in range(self.states) 
                 }
 

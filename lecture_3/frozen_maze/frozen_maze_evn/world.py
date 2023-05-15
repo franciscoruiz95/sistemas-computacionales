@@ -2,8 +2,8 @@ import pygame
 
 from . import settings
 from .tilemap import TileMap
-from maze_generator.KruskalsMazeGenerator import KruskalsMazeGenerate as Maze
-from maze_generator.KruskalsMazeGenerator import E, S
+from .KruskalsMazeGenerator import KruskalsMazeGenerate as Maze
+from .KruskalsMazeGenerator import E, S
 
 
 class World:
@@ -25,8 +25,9 @@ class World:
         self.tilemap = None
         self.finish_state = None
         self.maze = Maze(settings.ROWS, settings.COLS)
-        self.maze.generate()
+        #self.maze.generate()
         self._create_tilemap()
+        print(settings.ROWS, settings.COLS)
 
     def _create_tilemap(self):
         tile_texture_names = ["ice" for _ in range(settings.NUM_TILES)]
