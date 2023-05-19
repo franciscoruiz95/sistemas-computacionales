@@ -28,8 +28,8 @@ H_SCALE = 4
 V_SCALE = 4
 
 # Resolution of the actual window
-WINDOW_WIDTH = VIRTUAL_WIDTH 
-WINDOW_HEIGHT = VIRTUAL_HEIGHT 
+WINDOW_WIDTH = VIRTUAL_WIDTH
+WINDOW_HEIGHT = VIRTUAL_HEIGHT
 
 # Default pause time between steps (in seconds)
 DEFAULT_DELAY = 0.001
