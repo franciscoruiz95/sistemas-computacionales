@@ -7,34 +7,39 @@ from frozen_maze_evn.frozen_maze import FrozenMazeEnv
 
 def train(env, agent, episodes):
     for _ in range(episodes):
+        episode = []
         observation, _ = env.reset()
-        terminated, truncated = False, False
-        while not (terminated or truncated):
+        terminated = False
+        while not terminated:
             action = agent.get_action(observation)
-            new_observation, reward, terminated, truncated, _ = env.step(action)
-            agent.update(observation, action, reward, terminated)
+            new_observation, reward, terminated, _, _ = env.step(action)
+            episode.append((observation, action, reward))
             observation = new_observation
+        agent.update(episode)
 
 
 def play(env, agent):
     observation, _ = env.reset()
-    terminated, truncated = False, False
-    while not (terminated or truncated):
+    terminated = False
+    while not terminated:
         action = agent.get_best_action(observation)
-        observation, _, terminated, truncated, _ = env.step(action)
+        observation, reward, terminated, _, _ = env.step(action)
         env.render()
-        time.sleep(1)
+        time.sleep(0.1)
+    return reward
 
 
 if __name__ == "__main__":
-    env = gym.make("FrozenMaze-v0", render_mode="human")
-    agent = MonteCarlo(
-        env.observation_space.n, env.action_space.n, gamma=0.9, epsilon=0.9
-    )
+    env = gym.make("FrozenMaze-v0", is_slippery=False)
+    agent = MonteCarlo(env.observation_space.n,
+                       env.action_space.n, gamma=0.9, epsilon=0.3)
 
-    train(env, agent, episodes=100)
+    train(env, agent, episodes=1000)
+
     agent.render()
 
-    play(env, agent)
+    result = play(env, agent)
+
+    print(f"Total reward: {result}")
 
     env.close()

@@ -1,71 +1,37 @@
+import gym
+import time
 import numpy as np
 
 
 class MonteCarlo:
-    def __init__(self, states_n, actions_n, gamma, epsilon):
-        self.states_n = states_n
-        self.actions_n = actions_n
+    def __init__(self, observation_space, action_space, gamma=1.0, epsilon=0.1):
+        self.observation_space = observation_space
+        self.action_space = action_space
         self.gamma = gamma
         self.epsilon = epsilon
-        self.reset()
-
-    def reset(self):
-        self.episode = []
-        self.q = np.zeros((self.states_n, self.actions_n))
-        self.pi = np.full((self.states_n, self.actions_n), 1 / self.actions_n)
-        self.returns = np.zeros((self.states_n, self.actions_n))
-        self.returns_n = np.zeros((self.states_n, self.actions_n))
-
-    def update(self, state, action, reward, terminated):
-        self.episode.append((state, action, reward))
-        if terminated == True:
-            self._update_q()
-            self._update_pi()
-            self.episode = []
-
-    def _update_q(self):
-        states_actions = []
-        [
-            states_actions.append((state, action))
-            for state, action, _ in self.episode
-            if (state, action) not in states_actions
-        ]
-        for state, action in states_actions:
-            first_occurence = next(
-                i
-                for i, step in enumerate(self.episode)
-                if step[0] == state and step[1] == action
-            )
-            G = sum(
-                [
-                    step[2] * (self.gamma**i)
-                    for i, step in enumerate(self.episode[first_occurence:])
-                ]
-            )
-            self.returns[state][action] += G
-            self.returns_n[state][action] += 1
-            self.q[state][action] = (
-                self.returns[state][action] / self.returns_n[state][action]
-            )
-
-    def _update_pi(self):
-        states = []
-        [states.append(state) for state, _, _ in self.episode if state not in states]
-        for state in states:
-            best_action = np.argmax(self.q[state])
-            for action in range(self.actions_n):
-                if action == best_action:
-                    self.pi[state][action] = (
-                        1 - self.epsilon + (self.epsilon / self.actions_n)
-                    )
-                else:
-                    self.pi[state][action] = self.epsilon / self.actions_n
+        self.Q = np.zeros((observation_space, action_space))
+        self.N = np.zeros((observation_space, action_space))
 
     def get_action(self, state):
-        return np.random.choice(self.actions_n, p=self.pi[state])
+        if np.random.random() < self.epsilon:
+            return np.random.randint(self.action_space)
+        else:
+            return np.argmax(self.Q[state])
+
+    def update(self, episode):
+        states, actions, rewards = zip(*episode)
+        discounts = np.array([self.gamma**i for i in range(len(rewards))])
+        returns = np.cumsum(rewards[::-1] * discounts[::-1])[::-1]
+        for i, state in enumerate(states):
+            action = actions[i]
+            self.N[state][action] += 1
+            alpha = 1 / self.N[state][action]  # Step size
+            self.Q[state][action] += alpha * \
+                (returns[i] - self.Q[state][action])
 
     def get_best_action(self, state):
-        return np.argmax(self.q[state])
+        return np.argmax(self.Q[state])
 
     def render(self):
-        print(f"Values: {self.q}\nPolicy: {self.pi}")
+        print("Q-Values:")
+        print(self.Q)
