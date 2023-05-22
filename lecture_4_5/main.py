@@ -64,10 +64,6 @@ if __name__ == "__main__":
     agent1.render()
     env.close()
 
-    env = gym.make(environments[id], render_mode="human")
-    play(env, agent1)
-    env.close()
-
     env = gym.make(environments[id])
     agent2 = QLearning(
         env.observation_space.n, env.action_space.n, alpha=0.1, gamma=0.9, epsilon=0.5
@@ -76,9 +72,13 @@ if __name__ == "__main__":
     train(env, agent2, episodes)
     agent2.render()
     env.close()
+    
+    graph(agent1, agent2, environments[id], episodes)
+
+    env = gym.make(environments[id], render_mode="human")
+    play(env, agent1)
+    env.close()
 
     env = gym.make(environments[id], render_mode="human")
     play(env, agent2)
     env.close()
-
-    graph(agent1, agent2, environments[id], episodes)
