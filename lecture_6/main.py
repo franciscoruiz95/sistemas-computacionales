@@ -78,6 +78,7 @@ if __name__ == "__main__":
 
     for episode in episodes_:
         meanReturn = {}
+        print(f'Loop for {episode} Episodes')
         for agt in agents:
             print(f"Agent: {agt.__name__}")
             reward_for_episode = []
