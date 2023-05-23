@@ -59,7 +59,7 @@ def graph(agent_name, mean_return, episode):
     ax.bar(x + width/2, mean_return[agent_name[1].__name__], width, label=agent_name[1].__name__)
 
     ax.set_ylabel('Average Returns')
-    ax.set_title(f'{agent_name[0].__name__} vs. {agent_name[1].__name__}')
+    ax.set_title(f'{agent_name[0].__name__} vs. {agent_name[1].__name__} for {episode} Episodes')
     ax.set_xticks(x)
     ax.set_xticklabels(ALPHA)
     ax.legend()
