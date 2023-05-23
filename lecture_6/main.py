@@ -56,7 +56,7 @@ def graph(agent_name, mean_return, episode):
     fig, ax = plt.subplots()
 
     ax.bar(x - width/2, mean_return[agent_name[0].__name__], width, label=agent_name[0].__name__)
-    ax.bar(x + width/2, mean_return[agent_name[0].__name__], width, label=agent_name[1].__name__)
+    ax.bar(x + width/2, mean_return[agent_name[1].__name__], width, label=agent_name[1].__name__)
 
     ax.set_ylabel('Average Returns')
     ax.set_title(f'{agent_name[0].__name__} vs. {agent_name[1].__name__}')
