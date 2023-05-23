@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 
 ALPHA = [a/10 for a in range(1, 11)]
 
-meanReturn = {}
-
 def calculate_states_size(env):
     max = env.observation_space.high
     min = env.observation_space.low
@@ -75,30 +73,34 @@ if __name__ == "__main__":
     episodes = 4000 if len(sys.argv) == 1 else int(sys.argv[1])
     agents = [SARSA, ExpectedSARSA]
 
+    episodes_ = [1000, 2000, 3000, 4000]
     env = gym.make("MountainCar-v0")
 
-    for agt in agents:
-        print(f"Agent: {agt.__name__}")
-        reward_for_episode = []
-        for a in ALPHA:
-            print(f"For Alpha {a}")
-            agent = agt(
-                calculate_states_size(env),
-                env.action_space.n,
-                alpha=a,
-                gamma=0.9,
-                epsilon=0.1,
-            )
+    for episode in episodes_:
+        meanReturn = {}
+        for agt in agents:
+            print(f"Agent: {agt.__name__}")
+            reward_for_episode = []
+            for a in ALPHA:
+                print(f"For Alpha {a}")
+                agent = agt(
+                    calculate_states_size(env),
+                    env.action_space.n,
+                    alpha=a,
+                    gamma=0.9,
+                    epsilon=0.1,
+                )
 
-            # Train
-            run(env, agent, "epsilon-greedy", episodes)
+                # Train
+                run(env, agent, "epsilon-greedy", episode)
 
-            # Calculate the mean of sum of returns for each episode in Alpha
-            reward_for_episode.append(np.mean(agent.get_reward_for_episode()))
-            meanReturn[type(agent).__name__] = reward_for_episode
+                # Calculate the mean of sum of returns for each episode in Alpha
+                reward_for_episode.append(np.mean(agent.get_reward_for_episode()))
+                meanReturn[type(agent).__name__] = reward_for_episode
+
+        graph(agents, meanReturn, episode)
 
     env.close()
-    graph(agents, meanReturn, episodes)
 
 
 
