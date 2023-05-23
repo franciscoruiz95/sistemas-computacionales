@@ -1,0 +1,18 @@
+box2d-py==2.3.5
+cloudpickle==2.2.1
+contourpy==1.0.7
+cycler==0.11.0
+fonttools==4.39.4
+gym==0.26.2
+gym-environments @ https://github.com/jesuspangulo/gym_environments/archive/refs/heads/main.zip
+gym-notices==0.0.8
+kiwisolver==1.4.4
+matplotlib==3.7.1
+numpy==1.23.5
+packaging==23.1
+Pillow==9.5.0
+pygame==2.1.0
+pyparsing==3.0.9
+python-dateutil==2.8.2
+six==1.16.0
+swig==4.1.1
