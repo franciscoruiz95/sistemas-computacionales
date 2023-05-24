@@ -58,11 +58,16 @@ class ExpectedSARSA:
 
     def __average_expected_actions(self, next_state):
         expected_q = 0
+        greedy_actions = 0
         q_max = np.max(self.q_table[next_state])
 
         for action in range(self.actions_n):
             if self.q_table[next_state][action] == q_max:
-                expected_q += self.q_table[next_state][action] * (1 - self.epsilon + (self.epsilon / self.actions_n))
+                greedy_actions += 1
+
+        for action in range(self.actions_n):
+            if self.q_table[next_state][action] == q_max:
+                expected_q += self.q_table[next_state][action] * (((1 - self.epsilon) / greedy_actions) + (self.epsilon / self.actions_n))
             else:
                 expected_q += self.q_table[next_state][action] * (self.epsilon / self.actions_n)
 

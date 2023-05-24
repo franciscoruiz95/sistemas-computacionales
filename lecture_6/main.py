@@ -73,7 +73,7 @@ if __name__ == "__main__":
     episodes = 4000 if len(sys.argv) == 1 else int(sys.argv[1])
     agents = [SARSA, ExpectedSARSA]
 
-    episodes_ = [1000, 2000, 3000, 4000]
+    episodes_ = [4000]
     env = gym.make("MountainCar-v0")
 
     for episode in episodes_:
