@@ -25,8 +25,8 @@ class MonteCarloAgent:
 
     def print_policy(self):
         optimal_policy = np.argmax(self.Q, axis=1)
-        print("Optimal Policy:")
-        print(optimal_policy.reshape((4, 5)))
+        print("\nOptimal Policy for MonteCarlo Exploring Starts:\n")
+        print(optimal_policy.reshape((5, 5)))
 
     def update(self, episode):
         G = 0
@@ -42,4 +42,4 @@ class MonteCarloAgent:
                 visited_states.add((state, action))
 
     def render(self):
-        print(f"Values: {self.Q}\n")
+        print(f"\nMonteCarlo Exploring Starts Q-Values:\n\n {self.Q} \n")

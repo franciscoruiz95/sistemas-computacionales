@@ -186,6 +186,9 @@ class KruskalsMazeGenerate:
 
     def display_maze(self) -> None:
         print("\033[H") # move to upper-left
+        print("-----------")
+        print("Environment")
+        print("-----------")
         print(" " + "_" * (len(self.grid[0]) * 2 - 1))
         for row in self.grid:
             print("|", end="")

@@ -4,11 +4,12 @@ import numpy as np
 
 
 class MonteCarlo:
-    def __init__(self, observation_space, action_space, gamma=1.0, epsilon=0.1):
+    def __init__(self, observation_space, action_space, gamma=1.0, epsilon=1.0, epsilon_decay=0.999):
         self.observation_space = observation_space
         self.action_space = action_space
         self.gamma = gamma
         self.epsilon = epsilon
+        self.epsilon_decay = epsilon_decay
         self.Q = np.zeros((observation_space, action_space))
         self.N = np.zeros((observation_space, action_space))
 
@@ -28,10 +29,15 @@ class MonteCarlo:
             alpha = 1 / self.N[state][action]  # Step size
             self.Q[state][action] += alpha * \
                 (returns[i] - self.Q[state][action])
-
+        
     def get_best_action(self, state):
         return np.argmax(self.Q[state])
+    
+    def print_policy(self):
+        optimal_policy = np.argmax(self.Q, axis=1)
+        print("\nOptimal Policy for MonteCarlo:\n")
+        print(optimal_policy.reshape((5, 5)))
 
     def render(self):
-        print("Q-Values:")
+        print("MonteCarlo Q-Values: \n")
         print(self.Q)

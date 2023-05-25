@@ -10,7 +10,7 @@ from . import settings
 from .world import World
 
 class FrozenMazeEnv(gym.Env):
-    metadata = {"render_modes": ["human"], "render_fps": 4}
+    metadata = {"render_modes": ["human", "None"], "render_fps": 4}
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -57,8 +57,8 @@ class FrozenMazeEnv(gym.Env):
             self.current_state, self.current_action, self.current_reward, terminated
         )
 
-        self.render()
-        time.sleep(self.delay)
+        # self.render()
+        # time.sleep(self.delay)
 
         return self.current_state, self.current_reward, terminated, False, {}
 

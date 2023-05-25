@@ -9,10 +9,13 @@ from .p_matrix import PMatrix as pm
 TILE_SIZE = 32
 
 # Grid
-# ROWS = 4
-# COLS = 4
+# ROWS = 5
+# COLS = 5
 ROWS = np.random.randint(1, 20)
 COLS = np.random.randint(1, 20)
+
+
+
 
 
 NUM_TILES = ROWS * COLS

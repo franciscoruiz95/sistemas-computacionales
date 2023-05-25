@@ -28,7 +28,9 @@ class World:
         self.maze.display_maze()
         #self.maze.generate()
         self._create_tilemap()
-        print(settings.ROWS, settings.COLS)
+        print("\n----------------------------------------------------")
+        print("World size: ", settings.ROWS, " x " , settings.COLS)
+        print("----------------------------------------------------")
 
     def _create_tilemap(self):
         tile_texture_names = ["ice" for _ in range(settings.NUM_TILES)]
