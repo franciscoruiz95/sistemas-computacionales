@@ -48,32 +48,50 @@ def run(env, agent, selection_method, episodes):
             observation = new_observation
             action = next_action
 
-def graph(agent_name, mean_return, episode):
+def graph(agent_name, mean_return, episode, episodes_play, action):
+    if action == 'train':
+        x = np.arange(len(ALPHA))
+        width = 0.35
 
-    x = np.arange(len(ALPHA))
-    width = 0.35
+        fig, ax = plt.subplots()
 
-    fig, ax = plt.subplots()
+        ax.bar(x - width/2, mean_return[agent_name[0].__name__], width, label=agent_name[0].__name__)
+        ax.bar(x + width/2, mean_return[agent_name[1].__name__], width, label=agent_name[1].__name__)
 
-    ax.bar(x - width/2, mean_return[agent_name[0].__name__], width, label=agent_name[0].__name__)
-    ax.bar(x + width/2, mean_return[agent_name[1].__name__], width, label=agent_name[1].__name__)
+        ax.set_ylabel('Average Returns')
+        ax.set_title(f'{agent_name[0].__name__} vs. {agent_name[1].__name__} on MountainCar-v0\n for {episode} Training Episodes')
+        ax.set_xticks(x)
+        ax.set_xticklabels(ALPHA)
+        ax.legend()
 
-    ax.set_ylabel('Average Returns')
-    ax.set_title(f'{agent_name[0].__name__} vs. {agent_name[1].__name__} for {episode} Episodes')
-    ax.set_xticks(x)
-    ax.set_xticklabels(ALPHA)
-    ax.legend()
+        fig.tight_layout()
+        plt.savefig(f'pic/Train-{episode}-{agent_name[0].__name__}_Vs_{agent_name[1].__name__}.png')
+        # plt.show()
 
-    fig.tight_layout()
-    plt.savefig(f'pic/{episode}-{agent_name[0].__name__}_Vs_{agent_name[1].__name__}.png')
-    # plt.show()
+    elif action == 'play':
+        x = np.arange(len(ALPHA))
+        width = 0.35
+
+        fig, ax = plt.subplots()
+
+        ax.bar(x - width/2, mean_return[agent_name[0].__name__+'_play'], width, label=agent_name[0].__name__)
+        ax.bar(x + width/2, mean_return[agent_name[1].__name__+'_play'], width, label=agent_name[1].__name__)
+
+        ax.set_ylabel('Average Returns')
+        ax.set_title(f'{agent_name[0].__name__} vs. {agent_name[1].__name__} \n Play with {episode} Training Episodes')
+        ax.set_xticks(x)
+        ax.set_xticklabels(ALPHA)
+        ax.legend()
+
+        fig.tight_layout()
+        plt.savefig(f'pic/Play-{episodes_play}-Train{episode}-{agent_name[0].__name__}_Vs_{agent_name[1].__name__}.png')
 
 
 if __name__ == "__main__":
     episodes = 4000 if len(sys.argv) == 1 else int(sys.argv[1])
     agents = [SARSA, ExpectedSARSA]
 
-    episodes_ = [4000]
+    episodes_ = [1000, 2000, 3000, 4000]
     env = gym.make("MountainCar-v0")
 
     for episode in episodes_:
@@ -82,6 +100,7 @@ if __name__ == "__main__":
         for agt in agents:
             print(f"Agent: {agt.__name__}")
             reward_for_episode = []
+            reward_for_episode_play = []
             for a in ALPHA:
                 print(f"For Alpha {a}")
                 agent = agt(
@@ -99,14 +118,16 @@ if __name__ == "__main__":
                 reward_for_episode.append(np.mean(agent.get_reward_for_episode()))
                 meanReturn[type(agent).__name__] = reward_for_episode
 
-        graph(agents, meanReturn, episode)
+                # Play
+                env1 = gym.make("MountainCar-v0", render_mode=None)
+                run(env1, agent, "greedy", 1)
+                agent.render()
+                env1.close()
+                # Returns for each episode_play in Alpha
+                reward_for_episode_play.append(agent.reward_total)
+                meanReturn[type(agent).__name__+'_play'] = reward_for_episode_play
+
+        graph(agents, meanReturn, episode, 1, 'train')
+        graph(agents, meanReturn, episode, 1, 'play')
 
     env.close()
-
-
-
-    # Play
-    # env = gym.make("MountainCar-v0", render_mode="human")
-    # run(env, agent, "greedy", 1)
-    # agent.render()
-    # env.close()

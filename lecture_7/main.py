@@ -30,8 +30,8 @@ def run(env, agent: DYNAQ, selection_method, episodes):
 
             agent.update_steps_for_episode()
 
-def graph(agent1, agent2, environment, episodes_train, episodes_play, acction):
-    if acction == 'train':
+def graph(agent1, agent2, environment, episodes_train, episodes_play, action):
+    if action == 'train':
         x_agent1 = np.linspace(1, agent1.episode, episodes_train)
         x_agent2 = np.linspace(1, agent2.episode, episodes_train)
 
@@ -44,7 +44,7 @@ def graph(agent1, agent2, environment, episodes_train, episodes_play, acction):
         plt.legend()
         plt.savefig(f'pic/{episodes}-{environment}-DYNAQ-vs-DYNAQPlus.png')
     
-    elif acction == 'play':
+    elif action == 'play':
         x = np.linspace(1, episodes_play, episodes_play)
         y1_steps = np.linspace(0, agent1.step, agent1.step)
         y2_steps = np.linspace(0, agent2.step, agent2.step)

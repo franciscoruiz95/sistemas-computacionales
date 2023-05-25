@@ -20,6 +20,7 @@ class DoubleQLearning:
         self.next_state = 0
         self.reward = 0
         self.reward_total = 0
+        self.reward_total_finish = 0
         self.reward_for_episode = []
         self.q1 = np.zeros((self.states_n, self.actions_n))
         self.q2 = np.zeros((self.states_n, self.actions_n))
@@ -52,8 +53,7 @@ class DoubleQLearning:
         self.reward_total += reward
         if terminated:
             self.reward_for_episode.append(self.reward_total)
-            if self.episode % 100 == 0:
-                print(f'Iteration: {self.iteration}\tEpisode: {self.episode}\tReward Average: {self.reward_for_episode[self.episode]}\tTerminated: {terminated}')
+            self.reward_total_finish = self.reward_total
             self.reward_total = 0
             self.iteration = 0
             self.episode += 1
