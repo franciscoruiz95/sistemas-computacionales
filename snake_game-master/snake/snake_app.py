@@ -22,6 +22,10 @@ from hud import Hud
 
 from const import TIME
 
+import random
+
+import string
+
 
 class Application(tk.Frame):
 
@@ -62,9 +66,14 @@ class Application(tk.Frame):
         self.hud.set_score(score)
         self.hud.start_timer()
 
+    def generate_random_keystroke(self):
+        keystroke = random.choice(['Up', 'Down', 'Right', 'Left'])
+        self.snake.event_generate(f'<KeyPress-{keystroke}>')
+
     def run(self):
         """ Game main loop """
         if not self.snake.game_over():
+            self.generate_random_keystroke()
             self.snake.move_snake()
             self.snake.snake_animation()
             self.snake.check_collision()

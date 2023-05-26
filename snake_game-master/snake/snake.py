@@ -121,8 +121,8 @@ class Snake(tk.Canvas):
 
     def set_snake(self):
         """ This function creates and sets the snake on the board """
-        x = 60
-        y = 140
+        x = 180
+        y = 260
         head = self.create_image(x, y, image=self.skin['Down'], anchor='center')
         self.snake.append(head)
         for i in range(1, 2):
