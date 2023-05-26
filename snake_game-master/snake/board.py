@@ -16,7 +16,7 @@
 
 from random import choice
 
-from const import TileType
+from .const import TileType
 
 
 class Board:

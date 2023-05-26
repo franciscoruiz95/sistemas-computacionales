@@ -16,21 +16,21 @@
 
 import tkinter as tk
 
-from snake import Snake
+from .snake import Snake
 
-from hud import Hud
+from .hud import Hud
 
-from const import TIME
+from .const import TIME, Direction
 
 import random
 
 import string
 
 
-class Application(tk.Frame):
+class SnakeApp(tk.Frame):
 
     def __init__(self, master, skin: str, size: tuple):
-        super(Application, self).__init__(master)
+        super(SnakeApp, self).__init__(master)
         self.snake = Snake(self, skin, size)
         self.hud = Hud(self)
 
@@ -66,14 +66,18 @@ class Application(tk.Frame):
         self.hud.set_score(score)
         self.hud.start_timer()
 
-    def generate_random_keystroke(self):
+    def apply_action(self, action):
+        """ Returns a state given an action"""
+        self.snake.event_generate(f'<KeyPress-{Direction.actions[action]}>')
+        return self.snake.get_state(), self.snake.get_reward(), self.snake.game_over()
+
+    def generate_random_action(self):
         keystroke = random.choice(['Up', 'Down', 'Right', 'Left'])
         self.snake.event_generate(f'<KeyPress-{keystroke}>')
 
     def run(self):
         """ Game main loop """
         if not self.snake.game_over():
-            self.generate_random_keystroke()
             self.snake.move_snake()
             self.snake.snake_animation()
             self.snake.check_collision()
@@ -85,12 +89,13 @@ class Application(tk.Frame):
     def reset(self, event):
         """ Resets the hole game after a game over """
         if self.hud.get_lives() > 0:
-            self.snake.reset()
+            state = self.snake.reset()
             self.hud.update_lives()
             self.hud.reset_timer()
             self.hud.reset_score()
             self.run()
             self.snake.focus_set()
+            return state
         else:
             self.master.master.destroy()
 
@@ -101,3 +106,6 @@ class Application(tk.Frame):
     def game_over(self):
         """ Returns game status """
         return self.snake.game_over()
+
+    def get_current_state(self):
+        return self.snake.get_current_state()

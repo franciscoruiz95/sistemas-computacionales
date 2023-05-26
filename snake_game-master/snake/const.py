@@ -33,3 +33,8 @@ class Direction:
             'Left': (-SPEED, 0), 'Right': (SPEED, 0),
             'Up': (0, -SPEED), 'Down': (0, SPEED)
         }
+
+    actions = {
+        0: 'Left', 2: 'Right',
+        3: 'Up', 1: 'Down'
+    }

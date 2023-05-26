@@ -20,7 +20,7 @@ from PIL import ImageTk
 
 from PIL import Image
 
-from const import TIME
+from .const import TIME
 
 
 class Hud(tk.Frame):
@@ -41,13 +41,15 @@ class Hud(tk.Frame):
         self.score.set('SCORE: 0')
         # Lives
         self.lives = 3
+        self.life_lost = None
+        self.lives_label = None
 
     def load_images(self):
         """ Loads images used for the HUD from disk """
         self.heart = ImageTk.PhotoImage(
-            Image.open('../resources/img/hud/heart.png'))
+            Image.open('./resources/img/hud/heart.png'))
         self.life_lost = ImageTk.PhotoImage(
-            Image.open('../resources/img/hud/life_lost.png'))
+            Image.open('./resources/img/hud/life_lost.png'))
 
     def set_score_label(self):
         """ Creates the score label on the top left corner """
@@ -89,8 +91,9 @@ class Hud(tk.Frame):
         """ Removes a heart from the right top corner, every time
             a life is lost
         """
-        self.lives_label[self.lives - 1]['image'] = self.life_lost
-        self.lives -= 1
+        if (self.lives_label):
+            self.lives_label[self.lives - 1]['image'] = self.life_lost
+            self.lives -= 1
 
     def set_score(self, score):
         """ Sets the score text on the left top corner """

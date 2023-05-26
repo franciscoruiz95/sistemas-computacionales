@@ -22,9 +22,9 @@ from PIL import Image
 
 import os
 
-from board import Board
+from .board import Board
 
-from const import TileType, Direction, TIME
+from .const import TileType, Direction, TIME
 
 
 class Config:
@@ -61,7 +61,13 @@ class Snake(tk.Canvas):
         self.snake_y = Direction.SPEED
         self.lastKey = 'Down'
         self._game_over = False
+        self.snake_limit = self.get_states() // 2
         self.score = 0
+        self.skin = {}
+        self.block = None
+        self.apple = None
+        self.posion = None
+        self.reward = 0
         self.bind('<Up>', self.get_key)
         self.bind('<Down>', self.get_key)
         self.bind('<Left>', self.get_key)
@@ -70,15 +76,14 @@ class Snake(tk.Canvas):
     def load_images(self):
         """ Here all source images used in the game are loaded from disk """
         self.bg = ImageTk.PhotoImage(
-            Image.open('../resources/img/environment/bg.png'))
+            Image.open('./resources/img/environment/bg.png'))
         self.apple = ImageTk.PhotoImage(
-            Image.open('../resources/img/environment/apple.png'))
+            Image.open('./resources/img/environment/apple.png'))
         self.posion = ImageTk.PhotoImage(
-            Image.open('../resources/img/environment/poison.png'))
+            Image.open('./resources/img/environment/poison.png'))
         self.block = ImageTk.PhotoImage(
-            Image.open('../resources/img/environment/crate_box-min.png'))
-
-        self.skin = {}
+            Image.open('./resources/img/environment/crate_box-min.png'))
+        
         for file in os.scandir(self.config.skin_path):
             if file.name.endswith('.png'):
                 key = file.name.replace('.png', '')
@@ -123,19 +128,21 @@ class Snake(tk.Canvas):
         """ This function creates and sets the snake on the board """
         x = 180
         y = 260
-        head = self.create_image(x, y, image=self.skin['Down'], anchor='center')
-        self.snake.append(head)
-        for i in range(1, 2):
-            body = self.create_image(x,
-                                     y - i * self.config.block,
-                                     image=self.skin['B001'],
+        if (len(self.skin) > 0):
+            head = self.create_image(
+                x, y, image=self.skin['Down'], anchor='center')
+            self.snake.append(head)
+            for i in range(1, 2):
+                body = self.create_image(x,
+                                         y - i * self.config.block,
+                                         image=self.skin['B001'],
+                                         anchor='center')
+                self.snake.append(body)
+            tail = self.create_image(x,
+                                     y - 80,
+                                     image=self.skin['T003'],
                                      anchor='center')
-            self.snake.append(body)
-        tail = self.create_image(x,
-                                 y - 80,
-                                 image=self.skin['T003'],
-                                 anchor='center')
-        self.snake.append(tail)
+            self.snake.append(tail)
 
     def set_apple(self):
         """ Here the board supplies a valid position for a new apple
@@ -186,99 +193,124 @@ class Snake(tk.Canvas):
         # Make canvas coords and move methods local
         coords = self.coords
         move = self.move
+        if (self.snake):
+            n = len(self.snake)
+            tail = coords(self.snake[-1])
+            self.board.set_cell_type((tail[0], tail[1]), TileType.EMPTY)
 
-        n = len(self.snake)
-        tail = coords(self.snake[-1])
-        self.board.set_cell_type((tail[0], tail[1]), TileType.EMPTY)
+            for i in range(1, n):
+                last = coords(self.snake[n - i])
+                next_ = coords(self.snake[n - i - 1])
+                move(self.snake[n - i], next_[0] - last[0], next_[1] - last[1])
+            move(self.snake[0], self.snake_x, self.snake_y)
 
-        for i in range(1, n):
-            last = coords(self.snake[n - i])
-            next_ = coords(self.snake[n - i - 1])
-            move(self.snake[n - i], next_[0] - last[0], next_[1] - last[1])
-        move(self.snake[0], self.snake_x, self.snake_y)
+            # Make board.set_cell_type local
+            set_cell_type = self.board.set_cell_type
 
-        # Make board.set_cell_type local
-        set_cell_type = self.board.set_cell_type
-
-        for _id in range(1, len(self.snake)):
-            coord = coords(self.snake[_id])
-            set_cell_type((coord[0], coord[1]), TileType.SNAKE)
+            for _id in range(1, len(self.snake)):
+                coord = coords(self.snake[_id])
+                set_cell_type((coord[0], coord[1]), TileType.SNAKE)
 
     def snake_animation(self):
         """ This function animates the entire snake while it's moving """
 
         # Make canvas coords and itemconfigure methods local
-        coords = self.coords
-        itemconfigure = self.itemconfigure
-        tail = self.coords(self.snake[-1])
-        n = len(self.snake)
+        if (self.snake):
+            coords = self.coords
+            itemconfigure = self.itemconfigure
+            tail = self.coords(self.snake[-1])
+            n = len(self.snake)
 
-        # Tail animation
-        if coords(self.snake[-2])[1] - tail[1] > 0:
-            itemconfigure(self.snake[-1], image=self.skin['T003'])
-        elif coords(self.snake[-2])[1] - tail[1] < 0:
-            itemconfigure(self.snake[-1], image=self.skin['T001'])
-        elif coords(self.snake[-2])[0] - tail[0] > 0:
-            itemconfigure(self.snake[-1], image=self.skin['T000'])
-        else:
-            itemconfigure(self.snake[-1], image=self.skin['T002'])
-
-        # Body animation
-        for i in range(1, n - 1):
-            last = coords(self.snake[n - i])
-            mid = coords(self.snake[n - i - 1])
-            next_ = coords(self.snake[n - i - 2])
-            # Moving down, then right
-            if mid[1] - last[1] > 0 and next_[0] - mid[0] > 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR005'])
-            # Moving down, then left
-            elif mid[1] - last[1] > 0 and next_[0] - mid[0] < 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR004'])
-            # Moving up, then right
-            elif mid[1] - last[1] < 0 and next_[0] - mid[0] > 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR006'])
-            # Moving up, then left
-            elif mid[1] - last[1] < 0 and next_[0] - mid[0] < 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR007'])
-            # Moving right, then down
-            elif mid[0] - last[0] > 0 and next_[1] - mid[1] > 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR007'])
-            # Moving right, then up
-            elif mid[0] - last[0] > 0 and next_[1] - mid[1] < 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR004'])
-            # Moving left, then down
-            elif mid[0] - last[0] < 0 and next_[1] - mid[1] > 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR006'])
-            # Moving left, then up
-            elif mid[0] - last[0] < 0 and next_[1] - mid[1] < 0:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['TR005'])
-            # Moving vertically
-            elif last[0] == mid[0] == next_[0]:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['B001'])
-            # Moving horizontally
+            # Tail animation
+            if coords(self.snake[-2])[1] - tail[1] > 0:
+                itemconfigure(self.snake[-1], image=self.skin['T003'])
+            elif coords(self.snake[-2])[1] - tail[1] < 0:
+                itemconfigure(self.snake[-1], image=self.skin['T001'])
+            elif coords(self.snake[-2])[0] - tail[0] > 0:
+                itemconfigure(self.snake[-1], image=self.skin['T000'])
             else:
-                itemconfigure(self.snake[n - i - 1], image=self.skin['B000'])
-        # Head animation
-        itemconfigure(self.snake[0], image=self.skin[self.lastKey])
+                itemconfigure(self.snake[-1], image=self.skin['T002'])
+
+            # Body animation
+            for i in range(1, n - 1):
+                last = coords(self.snake[n - i])
+                mid = coords(self.snake[n - i - 1])
+                next_ = coords(self.snake[n - i - 2])
+                # Moving down, then right
+                if mid[1] - last[1] > 0 and next_[0] - mid[0] > 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR005'])
+                # Moving down, then left
+                elif mid[1] - last[1] > 0 and next_[0] - mid[0] < 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR004'])
+                # Moving up, then right
+                elif mid[1] - last[1] < 0 and next_[0] - mid[0] > 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR006'])
+                # Moving up, then left
+                elif mid[1] - last[1] < 0 and next_[0] - mid[0] < 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR007'])
+                # Moving right, then down
+                elif mid[0] - last[0] > 0 and next_[1] - mid[1] > 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR007'])
+                # Moving right, then up
+                elif mid[0] - last[0] > 0 and next_[1] - mid[1] < 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR004'])
+                # Moving left, then down
+                elif mid[0] - last[0] < 0 and next_[1] - mid[1] > 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR006'])
+                # Moving left, then up
+                elif mid[0] - last[0] < 0 and next_[1] - mid[1] < 0:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['TR005'])
+                # Moving vertically
+                elif last[0] == mid[0] == next_[0]:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['B001'])
+                # Moving horizontally
+                else:
+                    itemconfigure(self.snake[n - i - 1],
+                                  image=self.skin['B000'])
+            # Head animation
+            itemconfigure(self.snake[0], image=self.skin[self.lastKey])
 
     def check_collision(self):
         """ This function takes care of checking all possible collisions """
+        if (self.snake):
+            head = tuple(self.coords(self.snake[0]))
+            col_type = self.board.find_collision(head)
 
-        head = tuple(self.coords(self.snake[0]))
-        col_type = self.board.find_collision(head)
+            if col_type == TileType.APPLE:
+                self.score += 1
+                self.reward = 10
+                self.delete('apple')
+                self.add_tail()
+                self.set_apple()
+            elif col_type == TileType.POISON:
+                self.score += -1000
+                self.reward = -1000
+                self.delete('poison')
+                self._game_over = True
+            elif (col_type == TileType.WALL) or (col_type == TileType.SNAKE):
+                self.score += -1000
+                self.reward = -1000
+                self._game_over = True
+            elif self.get_snake_len() > self.snake_limit:
+                self.reward = 1000
+                self._game_over = True
+            else:
+                self.reward = -1
 
-        if col_type == TileType.APPLE:
-            self.score += 1
-            self.delete('apple')
-            self.add_tail()
-            self.set_apple()
-        elif col_type == TileType.POISON:
-            self.delete('poison')
-            self._game_over = True
-        elif (col_type == TileType.WALL) or (col_type == TileType.SNAKE):
-            self._game_over = True
-        else:
-            pass
+    def get_snake_len(self):
+        return len(self.snake)
+
+    def get_reward(self):
+        return self.reward
 
     def game_over(self):
         """ Returns current game status """
@@ -291,9 +323,19 @@ class Snake(tk.Canvas):
     def build(self):
         """ This function is used to reset the game after a game over """
         self.set_snake()
+        print('BUILD')
         self.set_blocks()
         self.set_apple()
         self.set_poison()
+
+    def point_to_state(self, x, y):
+        return x * self.config.width + y
+
+    def get_state(self):
+        return self.snake_x * self.config.width + self.snake_y
+
+    def get_states(self):
+        return self.config.width * self.config.width
 
     def reset(self):
         """ Resets the game to it's starting state after a game over """
@@ -309,5 +351,7 @@ class Snake(tk.Canvas):
         self.snake_x, self.snake_y = Direction.dic[self.lastKey]
         self.delete('wall')
         self.build()
+        print('SNAKE_RESET')
         self.score = 0
         self._game_over = False
+        return self.point_to_state(self.snake_x, self.snake_y)

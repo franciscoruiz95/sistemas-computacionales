@@ -20,7 +20,7 @@ from PIL import ImageTk
 
 from PIL import Image
 
-from snake_app import Application
+from .snake_app import SnakeApp
 
 
 class Game(tk.Frame):
@@ -32,51 +32,54 @@ class Game(tk.Frame):
         self.master.resizable(0, 0)
         self['width'] = 800
         self['height'] = 592
-        self.show_intro()
+        self.settings()
+       
+        # self.game_loop()
+        # self.show_intro()
 
-    def show_intro(self):
-        """ This function will show an intro window before the game
-            can be started
-        """
+    # def show_intro(self):
+    #     """ This function will show an intro window before the game
+    #         can be started
+    #     """
 
-        # Get main window width and height
-        w = self['width']
-        h = self['height']
+    #     # Get main window width and height
+    #     w = self['width']
+    #     h = self['height']
 
-        # Load intro main image
-        self.intro = ImageTk.PhotoImage(Image.open('../resources/intro.png'))
+    #     # Load intro main image
+    #     self.intro = ImageTk.PhotoImage(Image.open('../resources/intro.png'))
 
-        # This canvas holds all the images
-        canvas = tk.Canvas(self, width=w, bd=0,
-                           height=h - 30, bg='black',
-                           highlightthickness=0)
+    #     # This canvas holds all the images
+    #     canvas = tk.Canvas(self, width=w, bd=0,
+    #                        height=h - 30, bg='black',
+    #                        highlightthickness=0)
 
-        # Intro image
-        canvas.create_image(w / 2, h / 2, image=self.intro, anchor='center')
+    #     # Intro image
+    #     canvas.create_image(w / 2, h / 2, image=self.intro, anchor='center')
 
-        # Indicator label
-        text = tk.Label(self, text="Press 's' to start", anchor='center',
-                        font=('Kenney Mini Square', 15), background='white',
-                        foreground='#F40909')
+    #     # Indicator label
+    #     text = tk.Label(self, text="Press 's' to start", anchor='center',
+    #                     font=('Kenney Mini Square', 15), background='white',
+    #                     foreground='#F40909')
 
-        # Key 's' binded to be used as starter
-        self.bind('<s>', self.settings)
+    #     # Key 's' binded to be used as starter
+    #     self.bind('<s>', self.settings)
 
-        # self.intro_frame.bind('<q>',self.quit_game)
-        # Set focus to intro_frame so 's' can be used
-        self.focus_set()
+    #     # self.intro_frame.bind('<q>',self.quit_game)
+    #     # Set focus to intro_frame so 's' can be used
+    #     self.focus_set()
 
-        # Grid everything
-        canvas.grid(row=0, column=0)
-        text.grid(row=1, column=0, sticky='nswe')
-        self.grid()
+    #     # Grid everything
+    #     canvas.grid(row=0, column=0)
+    #     text.grid(row=1, column=0, sticky='nswe')
+    #     self.grid()
 
-    def settings(self, event):
+    def settings(self):
         """ This function will show a simple menu where the player can
             select a skin to play with, and a board size
         """
         # Bind next window
-        self.bind('<s>', self.build_game)
+        # self.bind('<s>', self.build_game)
 
         # Delete intro
         for widget in self.winfo_children():
@@ -100,17 +103,17 @@ class Game(tk.Frame):
         Load skins images
         """
         self.blue = ImageTk.PhotoImage(
-            Image.open('../resources/img/snakes/blue.png'))
+            Image.open('./resources/img/snakes/blue.png'))
         self.coral = ImageTk.PhotoImage(
-            Image.open('../resources/img/snakes/coral.png'))
+            Image.open('./resources/img/snakes/coral.png'))
         self.green = ImageTk.PhotoImage(
-            Image.open('../resources/img/snakes/green.png'))
+            Image.open('./resources/img/snakes/green.png'))
         self.orange = ImageTk.PhotoImage(
-            Image.open('../resources/img/snakes/orange.png'))
+            Image.open('./resources/img/snakes/orange.png'))
         self.purple = ImageTk.PhotoImage(
-            Image.open('../resources/img/snakes/purple.png'))
+            Image.open('./resources/img/snakes/purple.png'))
         self.yellow = ImageTk.PhotoImage(
-            Image.open('../resources/img/snakes/yellow.png'))
+            Image.open('./resources/img/snakes/yellow.png'))
         """
         """
         ######################################################################
@@ -172,11 +175,13 @@ class Game(tk.Frame):
         canvas.create_window(400, 280, window=frame)
         canvas.grid()
         self.grid()
+
+        self.build_game()
         """
         """
         ######################################################################
 
-    def build_game(self, event):
+    def build_game(self):
         """ This function grabs the selected settings and saves them
             to be used in the initialization of the game
         """
@@ -186,12 +191,12 @@ class Game(tk.Frame):
             widget.destroy()
 
         skin_dir = {
-            1: '../resources/img/skin/blue',
-            2: '../resources/img/skin/coral',
-            3: '../resources/img/skin/green',
-            4: '../resources/img/skin/orange',
-            5: '../resources/img/skin/purple',
-            6: '../resources/img/skin/yellow'
+            1: './resources/img/skin/blue',
+            2: './resources/img/skin/coral',
+            3: './resources/img/skin/green',
+            4: './resources/img/skin/orange',
+            5: './resources/img/skin/purple',
+            6: './resources/img/skin/yellow'
         }
 
         size_dic = {
@@ -208,13 +213,16 @@ class Game(tk.Frame):
 
     def game_loop(self):
         """ Initializes and run the game with the selected settings """
-        self.app = Application(self, self.skin, self.size)
-        self.app.initialize()
-        self.app.grid_all()
-        self.app.run()
+        self.snakeApp = SnakeApp(self, self.skin, self.size)
+        self.snakeApp.initialize()
+        self.snakeApp.grid_all()
+        self.snakeApp.run()
+
+    def main_loop(self):
+        self.mainloop()
 
 
-if __name__ == '__main__':
-    root = tk.Tk()
-    app = Game(root)
-    app.mainloop()
+# if __name__ == '__main__':
+#     root = tk.Tk()
+#     app = Game(root)
+#     app.mainloop()
