@@ -57,8 +57,8 @@ class FrozenMazeEnv(gym.Env):
             self.current_state, self.current_action, self.current_reward, terminated
         )
 
-        # self.render()
-        # time.sleep(self.delay)
+        self.render()
+        time.sleep(self.delay)
 
         return self.current_state, self.current_reward, terminated, False, {}
 

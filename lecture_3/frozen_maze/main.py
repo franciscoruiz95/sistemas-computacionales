@@ -30,8 +30,8 @@ def play_monte_carlo_exploring_starts(env, agent, runs):
         while not (terminated or truncated):
             action = np.argmax(agent.Q[state])
             state, reward, terminated, truncated, _ = env.step(action)
-            # env.render()
-            # time.sleep(0.1)
+            env.render()
+            time.sleep(0.1)
             total_reward += reward
     return total_reward
 
@@ -58,8 +58,8 @@ def play_monte_carlo(env, agent, runs):
             action = agent.get_best_action(observation)
             observation, reward, terminated, _, _ = env.step(action)
             total_reward += reward
-            # env.render()
-            # time.sleep(0.01)
+            env.render()
+            time.sleep(0.1)
     return total_reward
 
 
@@ -98,8 +98,6 @@ if __name__ == "__main__":
     for _ in range(100):
         result_exploring_starts.append(
             play_monte_carlo_exploring_starts(env, agent_exploring_starts, 100))
-
-    # for _ in range(100):
 
     print(
         f"\nTotal average reward monte carlo: {sum(result_monte_carlo) / len(result_monte_carlo)}\n")
