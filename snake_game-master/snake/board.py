@@ -16,7 +16,7 @@
 
 from random import choice
 
-from .const import TileType
+from const import TileType
 
 
 class Board:
@@ -26,6 +26,7 @@ class Board:
         self.height = height
         self.units = units
         self.tiles = {}
+        self.states = {}
         self.make_board()
 
     def make_board(self):
@@ -33,6 +34,17 @@ class Board:
         for row in range(self.units // 2, self.width, self.units):
             for col in range(self.units // 2, self.height, self.units):
                 self.tiles[(row, col)] = TileType.EMPTY
+
+    def create_states(self):
+        counter = 0
+        for row in range(self.units // 2, self.width, self.units):
+            for col in range(self.units // 2, self.height, self.units):
+                if self.tiles[(row, col)] != TileType.WALL:
+                    self.states[(row, col)] = counter
+                    counter += 1
+
+    def point_to_state(self, head):
+        return self.states[head]
 
     def set_cell_type(self, cell: tuple, cell_type: int = 0):
         """ Simple function to set a cell as filled by some type of object """

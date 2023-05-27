@@ -6,7 +6,7 @@ import gym_environments
 import matplotlib
 import matplotlib.pyplot as plt
 from snake.SnakeGym import SnakeGym
-from agent import DoubleQLearning
+from snake.agent import DoubleQLearning
 
 
 def train(env, agent, episodes):
@@ -18,7 +18,6 @@ def train(env, agent, episodes):
         while not (terminated or truncated):
 
             action = agent.get_action(observation, "epsilon-greedy")
-            print(action)
             new_observation, reward, terminated, truncated, _ = env.step(
                 action)
             # print(new_observation, reward, terminated, truncated, _)
@@ -86,18 +85,19 @@ def graph(agent1, agent2, environment, episodes, action):
 
 
 if __name__ == "__main__":
-    environments = ["CliffWalking-v0", "Taxi-v3", "Princess-v0", "Blocks-v0"]
-    id = 0 if len(sys.argv) < 2 else int(sys.argv[1])
-    episodes = 1000 if len(sys.argv) < 3 else int(sys.argv[2])
+
+    episodes = 1000
+
+    agent = DoubleQLearning(
+        18*18, 4, alpha=0.1, gamma=0.9, epsilon=0.5
+    )
 
     env = gym.make("CustomSnake-v0")
 
-    
-    agent1 = DoubleQLearning(
-        env.observation_space.n, env.action_space.n, alpha=0.1, gamma=0.9, epsilon=0.5
-    )
+    env.reset()
 
-    train(env, agent1, episodes)
+    env.render()
+
     env.close()
 
     # play(env, agent1)

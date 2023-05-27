@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-TIME = 70
+TIME = 60
 
 
 class TileType:
@@ -38,3 +38,5 @@ class Direction:
         0: 'Left', 2: 'Right',
         3: 'Up', 1: 'Down'
     }
+
+    

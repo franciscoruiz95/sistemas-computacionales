@@ -22,9 +22,9 @@ from PIL import Image
 
 import os
 
-from .board import Board
+from board import Board
 
-from .const import TileType, Direction, TIME
+from const import TileType, Direction, TIME
 
 
 class Config:
@@ -68,6 +68,9 @@ class Snake(tk.Canvas):
         self.apple = None
         self.posion = None
         self.reward = 0
+        self.reason = None
+        self.apple_pos = None
+        self.current_action = None
         self.bind('<Up>', self.get_key)
         self.bind('<Down>', self.get_key)
         self.bind('<Left>', self.get_key)
@@ -76,14 +79,14 @@ class Snake(tk.Canvas):
     def load_images(self):
         """ Here all source images used in the game are loaded from disk """
         self.bg = ImageTk.PhotoImage(
-            Image.open('./resources/img/environment/bg.png'))
+            Image.open('../resources/img/environment/bg.png'))
         self.apple = ImageTk.PhotoImage(
-            Image.open('./resources/img/environment/apple.png'))
+            Image.open('../resources/img/environment/apple.png'))
         self.posion = ImageTk.PhotoImage(
-            Image.open('./resources/img/environment/poison.png'))
+            Image.open('../resources/img/environment/poison.png'))
         self.block = ImageTk.PhotoImage(
-            Image.open('./resources/img/environment/crate_box-min.png'))
-        
+            Image.open('../resources/img/environment/crate_box-min.png'))
+
         for file in os.scandir(self.config.skin_path):
             if file.name.endswith('.png'):
                 key = file.name.replace('.png', '')
@@ -148,8 +151,8 @@ class Snake(tk.Canvas):
         """ Here the board supplies a valid position for a new apple
             on the board, then creates the apple
         """
-        pos = self.board.apple_cell()
-        self.create_image(pos[0], pos[1], image=self.apple,
+        self.apple_pos = self.board.apple_cell()
+        self.create_image(self.apple_pos[0], self.apple_pos[1], image=self.apple,
                           anchor='center', tag='apple')
 
     def set_poison(self):
@@ -287,24 +290,34 @@ class Snake(tk.Canvas):
 
             if col_type == TileType.APPLE:
                 self.score += 1
-                self.reward = 10
+                self.reward = 1
+                self.reason = None
                 self.delete('apple')
                 self.add_tail()
                 self.set_apple()
             elif col_type == TileType.POISON:
-                self.score += -1000
-                self.reward = -1000
+                self.reward = -1
+                self.reason = 'Tail'
                 self.delete('poison')
                 self._game_over = True
-            elif (col_type == TileType.WALL) or (col_type == TileType.SNAKE):
-                self.score += -1000
-                self.reward = -1000
+            elif (col_type == TileType.WALL):
+                self.reward = -1
+                self.reason = 'Screen'
+                self._game_over = True
+            elif (col_type == TileType.SNAKE):
+                self.reward = -1
+                self.reason = 'Tail'
                 self._game_over = True
             elif self.get_snake_len() > self.snake_limit:
-                self.reward = 1000
+                self.reward = 1
+                self.reason = None
                 self._game_over = True
             else:
-                self.reward = -1
+                self.reason = None
+                self.reward = 0
+
+    def get_reason(self):
+        return self.reason
 
     def get_snake_len(self):
         return len(self.snake)
@@ -323,7 +336,6 @@ class Snake(tk.Canvas):
     def build(self):
         """ This function is used to reset the game after a game over """
         self.set_snake()
-        print('BUILD')
         self.set_blocks()
         self.set_apple()
         self.set_poison()
@@ -331,8 +343,17 @@ class Snake(tk.Canvas):
     def point_to_state(self, x, y):
         return x * self.config.width + y
 
+    def get_food(self):
+        return self.apple_pos
+
+    def get_snake(self):
+        snake = [tuple(self.coords(self.snake[i]))
+                 for i in range(len(self.snake))]
+        return snake
+
     def get_state(self):
-        return self.snake_x * self.config.width + self.snake_y
+        head = tuple(self.coords(self.snake[0]))
+        return self.board.point_to_state(head)
 
     def get_states(self):
         return self.config.width * self.config.width
@@ -349,9 +370,8 @@ class Snake(tk.Canvas):
         self.board.clear_board()
         self.lastKey = 'Down'
         self.snake_x, self.snake_y = Direction.dic[self.lastKey]
-        self.delete('wall')
+        # self.delete('wall')
         self.build()
-        print('SNAKE_RESET')
         self.score = 0
         self._game_over = False
-        return self.point_to_state(self.snake_x, self.snake_y)
+        return self.get_state()

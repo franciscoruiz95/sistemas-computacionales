@@ -24,7 +24,6 @@ from .snake_app import SnakeApp
 
 
 class Game(tk.Frame):
-
     def __init__(self, master=None):
         super(Game, self).__init__(master)
         self.master.title('TkSnake')
@@ -33,47 +32,10 @@ class Game(tk.Frame):
         self['width'] = 800
         self['height'] = 592
         self.settings()
+        self.snakeApp = SnakeApp(self, self.skin, self.size)
+        self.snakeApp.initialize()
+        self.snakeApp.grid_all()
        
-        # self.game_loop()
-        # self.show_intro()
-
-    # def show_intro(self):
-    #     """ This function will show an intro window before the game
-    #         can be started
-    #     """
-
-    #     # Get main window width and height
-    #     w = self['width']
-    #     h = self['height']
-
-    #     # Load intro main image
-    #     self.intro = ImageTk.PhotoImage(Image.open('../resources/intro.png'))
-
-    #     # This canvas holds all the images
-    #     canvas = tk.Canvas(self, width=w, bd=0,
-    #                        height=h - 30, bg='black',
-    #                        highlightthickness=0)
-
-    #     # Intro image
-    #     canvas.create_image(w / 2, h / 2, image=self.intro, anchor='center')
-
-    #     # Indicator label
-    #     text = tk.Label(self, text="Press 's' to start", anchor='center',
-    #                     font=('Kenney Mini Square', 15), background='white',
-    #                     foreground='#F40909')
-
-    #     # Key 's' binded to be used as starter
-    #     self.bind('<s>', self.settings)
-
-    #     # self.intro_frame.bind('<q>',self.quit_game)
-    #     # Set focus to intro_frame so 's' can be used
-    #     self.focus_set()
-
-    #     # Grid everything
-    #     canvas.grid(row=0, column=0)
-    #     text.grid(row=1, column=0, sticky='nswe')
-    #     self.grid()
-
     def settings(self):
         """ This function will show a simple menu where the player can
             select a skin to play with, and a board size
@@ -208,15 +170,17 @@ class Game(tk.Frame):
             self.size = size_dic[self.size_value.get()]
         except:
             self.skin = skin_dir[1]
-            self.size = size_dic[3]
-        self.game_loop()
+            self.size = size_dic[6]
+        # self.game_loop()
+
+    def train(self):
+       pass
 
     def game_loop(self):
         """ Initializes and run the game with the selected settings """
-        self.snakeApp = SnakeApp(self, self.skin, self.size)
-        self.snakeApp.initialize()
-        self.snakeApp.grid_all()
-        self.snakeApp.run()
+        
+        
+        # self.snakeApp.run()
 
     def main_loop(self):
         self.mainloop()
