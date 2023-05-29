@@ -88,7 +88,7 @@ class SnakeApp(tk.Frame):
             self.snake.get_snake(), self.snake.get_food(), 'epsilon-greedy')
         new_observation, reward, terminated, truncated, _ = self.apply_action(
             action)
-        self.agent.update(self.snake.get_reason(), self.score)
+        self.agent.update(self.snake.get_reason(), self.score, 'train')
         self.observation = new_observation
 
     def play(self):
@@ -98,7 +98,7 @@ class SnakeApp(tk.Frame):
             self.snake.get_snake(), self.snake.get_food(), 'greedy')
         new_observation, reward, terminated, truncated, _ = self.apply_action(
             action)
-        self.agent.update(self.snake.get_reason(), self.score)
+        self.agent.update(self.snake.get_reason(), self.score, 'play')
         self.observation = new_observation
 
     def apply_action(self, action):
@@ -119,7 +119,7 @@ class SnakeApp(tk.Frame):
             self.snake.snake_animation()
             self.snake.check_collision()
             self.update_hud()
-            self.after(4, self.run)
+            self.after(2, self.run)
         else:
             self.focus_set()
             self.reset()
@@ -148,7 +148,7 @@ class SnakeApp(tk.Frame):
             self.snake.focus_set()
             return state
         else:
-            self.agent.graph()
+            self.agent.graph('training')
             print('Graphics')
             self.hud.set_lives(10)
             self.run_play()
@@ -165,6 +165,7 @@ class SnakeApp(tk.Frame):
             self.snake.focus_set()
             return state
         else:
+            self.agent.graph('playing')
             self.quit_game()
 
     def quit_game(self):

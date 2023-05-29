@@ -21,9 +21,7 @@ class QLearning:
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
-        self.total_reward = 0
         self.episode = 0
-        self.reward_for_episode = []
 
         self.display_width = display_width
         self.display_height = display_height
@@ -36,7 +34,6 @@ class QLearning:
 
         # State/Action history
         self.qvalues = self.LoadQvalues()
-        self.history = []
 
         # Action space
         self.actions = {
@@ -50,6 +47,8 @@ class QLearning:
 
     def reset(self):
         self.history = []
+        self.reward_for_episode_train = []
+        self.reward_for_episode_play = []
 
     def LoadQvalues(self, path="qvalues.json"):
         with open(path, "r") as f:
@@ -60,10 +59,14 @@ class QLearning:
         with open(path, "w") as f:
             json.dump(self.qvalues, f)
 
-    def update(self, reason, score):
+    def update(self, reason, score, mode):
         if reason:
-            self.reward_for_episode.append(score)
-            print("Score", score)
+            if mode == 'train':
+                self.reward_for_episode_train.append(score)
+                print("Score", score)
+            if mode == 'play':
+                self.reward_for_episode_play.append(score)
+                print("Score", score)
 
         history = self.history[::-1]
         for i, h in enumerate(history[:-1]):
@@ -166,31 +169,29 @@ class QLearning:
         })
         return action_key
 
-    def render(self, mode="values"):
-        if mode == "step":
-            print(
-                "Episode: {}, Iteration: {}, State: {}, Action: {}, Next state: {}, Reward: {}".format(
-                    self.episode,
-                    self.iteration,
-                    self.state,
-                    self.action,
-                    self.next_state,
-                    self.reward,
-                )
-            )
-        elif mode == "values":
-            print("Q1: {}\nQ2: {}".format(self.q1, self.q2))
-            print(self.episode)
-            print(len(self.reward_for_episode), self.reward_for_episode)
+    def render(self):
+            print("Q-Values: {}".format(self.qvalues))
 
-    def graph(self):
-        x = np.linspace(0, len(self.reward_for_episode), len(self.reward_for_episode))
+    def graph(self, mode):
+        episodes = 0
+        if mode == 'training':
+            episodes = len(self.reward_for_episode_train)
+            x = np.linspace(0, len(self.reward_for_episode_train), episodes)
+            plt.plot(x, self.reward_for_episode_train, label='Q-learning')
+            plt.xlabel('Episodes')
+            plt.ylabel('Tatal Reward')
+            plt.title(f"Agent learning with Q-Learning\n on Snake ('Epsilon Voráz') Environment on mode {mode}")
+            plt.legend()
+            plt.savefig(f'../resources/graphics/{episodes}-{mode}-Q-Learning.png')
 
-        plt.plot(x, self.reward_for_episode, label='Q-learning')
-
-        plt.xlabel('Episodes')
-        plt.ylabel('Tatal Reward')
-        plt.title("Agent learning with Q-Learning\n on Snake ('Epsilon Voráz') Environment")
-        plt.legend()
-        plt.savefig(f'../resources/graphics/{len(self.reward_for_episode)}-Q-Learning.png')
+        elif mode == 'playing':
+            episodes = len(self.reward_for_episode_play)
+            x = np.linspace(0, len(self.reward_for_episode_play), episodes)
+            plt.plot(x, self.reward_for_episode_play, label='Q-learning')
+            plt.xlabel('Episodes')
+            plt.ylabel('Tatal Reward')
+            plt.title(f"Agent learning with Q-Learning\n on Snake ('Epsilon Voráz') Environment on mode {mode}")
+            plt.legend()
+            plt.savefig(f'../resources/graphics/{episodes}-{mode}-Q-Learning.png')
+        
         # plt.show()
