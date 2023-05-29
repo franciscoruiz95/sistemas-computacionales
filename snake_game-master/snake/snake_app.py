@@ -103,7 +103,7 @@ class SnakeApp(tk.Frame):
 
     def apply_action(self, action):
         """ Returns a state given an action"""
-        self.snake.event_generate(f'<KeyPress-{Direction.actions[action]}>')
+        self.snake.event_generate(f'<KeyPress-{action}>')
         # self.snake.check_collision()
         return self.snake.get_state(), self.snake.get_reward(), self.snake.game_over(), False, {}
 
@@ -148,7 +148,7 @@ class SnakeApp(tk.Frame):
             self.snake.focus_set()
             return state
         else:
-            self.agent.graph('training')
+            self.agent.graph_train()
             print('Graphics')
             self.hud.set_lives(10)
             self.run_play()
@@ -165,7 +165,7 @@ class SnakeApp(tk.Frame):
             self.snake.focus_set()
             return state
         else:
-            self.agent.graph('playing')
+            self.agent.graph_play()
             self.quit_game()
 
     def quit_game(self):

@@ -37,10 +37,10 @@ class QLearning:
 
         # Action space
         self.actions = {
-            0: 'left',
-            1: 'right',
-            2: 'up',
-            3: 'down'
+            0: 'Left',
+            1: 'Right',
+            2: 'Up',
+            3: 'Down'
         }
 
         self.reset()
@@ -157,7 +157,6 @@ class QLearning:
             else:
                 state_scores = self.qvalues[self._GetStateStr(state)]
                 action_key = state_scores.index(max(state_scores))
-            action_val = self.actions[action_key]
         else:
             state_scores = self.qvalues[self._GetStateStr(state)]
             action_key = state_scores.index(max(state_scores))
@@ -167,31 +166,34 @@ class QLearning:
             'state': state,
             'action': action_key
         })
-        return action_key
+
+        return self.actions[action_key]
 
     def render(self):
             print("Q-Values: {}".format(self.qvalues))
 
-    def graph(self, mode):
+    def graph_train(self):
         episodes = 0
-        if mode == 'training':
-            episodes = len(self.reward_for_episode_train)
-            x = np.linspace(0, len(self.reward_for_episode_train), episodes)
-            plt.plot(x, self.reward_for_episode_train, label='Q-learning')
-            plt.xlabel('Episodes')
-            plt.ylabel('Tatal Reward')
-            plt.title(f"Agent learning with Q-Learning\n on Snake ('Epsilon Voráz') Environment on mode {mode}")
-            plt.legend()
-            plt.savefig(f'../resources/graphics/{episodes}-{mode}-Q-Learning.png')
+        episodes = len(self.reward_for_episode_train)
+        x = np.linspace(0, len(self.reward_for_episode_train), episodes)
+        plt.plot(x, self.reward_for_episode_train, label='Q-learning')
+        plt.xlabel('Episodes')
+        plt.ylabel('Tatal Reward')
+        plt.title(f"Agent learning with Q-Learning\n on Snake ('Epsilon Voráz') Environment on mode Training")
+        plt.legend()
+        plt.savefig(f'../resources/graphics/{episodes}-Train-Q-Learning.png')
+        plt.clf()
 
-        elif mode == 'playing':
-            episodes = len(self.reward_for_episode_play)
-            x = np.linspace(0, len(self.reward_for_episode_play), episodes)
-            plt.plot(x, self.reward_for_episode_play, label='Q-learning')
-            plt.xlabel('Episodes')
-            plt.ylabel('Tatal Reward')
-            plt.title(f"Agent learning with Q-Learning\n on Snake ('Epsilon Voráz') Environment on mode {mode}")
-            plt.legend()
-            plt.savefig(f'../resources/graphics/{episodes}-{mode}-Q-Learning.png')
+    def graph_play(self):
+        episodes = 0
+        episodes = len(self.reward_for_episode_play)
+        episodes_train = len(self.reward_for_episode_train)
+        x = np.linspace(0, len(self.reward_for_episode_play), episodes)
+        plt.plot(x, self.reward_for_episode_play, label='Q-learning')
+        plt.xlabel('Episodes')
+        plt.ylabel('Tatal Reward')
+        plt.title(f"Agent learning with Q-Learning\n on Snake ('Epsilon Voráz') Environment on mode Playing")
+        plt.legend()
+        plt.savefig(f'../resources/graphics/{episodes}-Play-with-{episodes_train}-Q-Learning.png')
         
         # plt.show()

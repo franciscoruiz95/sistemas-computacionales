@@ -40,7 +40,7 @@ class Hud(tk.Frame):
         self.score = tk.StringVar()
         self.score.set('SCORE: 0')
         # Lives
-        self.lives = 50
+        self.lives = 500
         self.life_lost = None
         self.lives_label = None
 
